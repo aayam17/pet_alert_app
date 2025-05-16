@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'signup_page.dart';
+import 'login_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +28,14 @@ class WelcomePage extends StatelessWidget {
 
                 // Center Image
                 ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      '/Users/aayambhattarai/Documents/Developers/flutter/pet_alert_app/lib/assets/logo_pet.png', 
-                      width: 350,
-                      height: 350,
-                      fit: BoxFit.contain,
-                    ),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'assets/logo_pet.png', 
+                    width: 350,
+                    height: 350,
+                    fit: BoxFit.contain,
                   ),
+                ),
 
                 const SizedBox(height: 30),
 
@@ -59,7 +59,10 @@ class WelcomePage extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // TODO: Create Account logic
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const SignupPage()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal,
@@ -71,7 +74,11 @@ class WelcomePage extends StatelessWidget {
                         ),
                         child: const Text(
                           'Create Account',
-                          style: TextStyle(fontSize: 16,color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -80,7 +87,10 @@ class WelcomePage extends StatelessWidget {
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: () {
-                          // TODO: Log In logic
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginPage()),
+                          );
                         },
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(color: Colors.teal),
@@ -91,7 +101,11 @@ class WelcomePage extends StatelessWidget {
                         ),
                         child: const Text(
                           'Log In',
-                          style: TextStyle(fontSize: 16, color: Colors.teal, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.teal,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

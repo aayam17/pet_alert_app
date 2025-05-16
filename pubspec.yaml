@@ -28,8 +28,12 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+
+
   flutter:
-    sdk: flutter
+    sdk: flutter  
+  font_awesome_flutter: ^10.5.0  
+  google_fonts: ^6.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -58,7 +62,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - /Users/aayambhattarai/Documents/Developers/flutter/pet_alert_app/lib/assets/logo_pet.png
+    - assets/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
