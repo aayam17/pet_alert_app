@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dashboard.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,8 +23,11 @@ class _LoginPageState extends State<LoginPage> {
 
       Future.delayed(const Duration(seconds: 2), () {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login Successful!')),
+
+        // ✅ Navigate to Dashboard after login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
         );
       });
     }
@@ -62,7 +66,6 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 40),
-
               Text(
                 'Welcome Back!',
                 style: GoogleFonts.poppins(
@@ -72,9 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               const SizedBox(height: 40),
-
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -104,9 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 20),
-
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -146,9 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 10),
-
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -173,9 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 10),
-
               ElevatedButton(
                 onPressed: _isLoading ? null : _tryLogin,
                 style: ElevatedButton.styleFrom(
@@ -204,18 +199,14 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
               ),
-
               const SizedBox(height: 30),
-
               Center(
                 child: Text(
                   "Or log in with",
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -253,7 +244,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 40),
             ],
           ),

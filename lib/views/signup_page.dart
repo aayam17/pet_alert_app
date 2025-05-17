@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart'; 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dashboard.dart';
+import 'terms_page.dart'; 
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -45,8 +48,10 @@ class _SignupPageState extends State<SignupPage> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign Up Successful!')),
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
         );
       });
     }
@@ -78,7 +83,6 @@ class _SignupPageState extends State<SignupPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 40),
-
               Text(
                 'Join PetAlert!',
                 style: GoogleFonts.poppins(
@@ -88,9 +92,8 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
+              
               const SizedBox(height: 40),
-
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -115,9 +118,7 @@ class _SignupPageState extends State<SignupPage> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 20),
-
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -147,9 +148,7 @@ class _SignupPageState extends State<SignupPage> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 20),
-
               TextFormField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
@@ -189,9 +188,7 @@ class _SignupPageState extends State<SignupPage> {
                   return null;
                 },
               ),
-
               const SizedBox(height: 20),
-
               Row(
                 children: [
                   Checkbox(
@@ -202,17 +199,33 @@ class _SignupPageState extends State<SignupPage> {
                       });
                     },
                   ),
-                  const Expanded(
-                    child: Text(
-                      'I agree to the Terms & Conditions',
-                      style: TextStyle(fontSize: 14),
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: const TextStyle(color: Colors.black, fontSize: 14),
+                        children: [
+                          const TextSpan(text: 'I agree to the '),
+                          TextSpan(
+                            text: 'Terms & Conditions',
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const TermsPage()),
+                                );
+                              },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
-
               Tooltip(
                 message: _agreedToTerms
                     ? ''
@@ -246,18 +259,14 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                 ),
               ),
-
               const SizedBox(height: 30),
-
               Center(
                 child: Text(
                   "Or sign up with",
                   style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -295,7 +304,6 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 40),
             ],
           ),
