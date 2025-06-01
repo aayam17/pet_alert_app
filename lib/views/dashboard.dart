@@ -88,7 +88,7 @@ class _DashboardState extends State<Dashboard> {
               const SizedBox(height: 16),
 
               const Text(
-                'Here you can manage all your pet alerts, view updates, and explore features.',
+                ' Dashboard pet alerts, view updates, and explore features.',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
