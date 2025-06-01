@@ -20,26 +20,26 @@ class WelcomePage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Spacer(),
+                const SizedBox(height: 20),
 
-                const SizedBox(height: 30),
-
-                // Center Image
+                // Logo
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                    'assets/logo_pet.png', 
-                    width: 350,
-                    height: 350,
+                    'assets/logo_pet.png',
+                    width: 320,
+                    height: 320,
                     fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.pets, size: 100, color: Colors.teal),
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
 
-                // Description
+                // Welcome Text
                 const Text(
                   'Welcome to PetAlert!\nAll your pet needs in one place.',
                   style: TextStyle(
@@ -50,9 +50,9 @@ class WelcomePage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 36),
 
-                // Buttons
+                // Action Buttons
                 Column(
                   children: [
                     SizedBox(
@@ -76,8 +76,8 @@ class WelcomePage extends StatelessWidget {
                           'Create Account',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -93,18 +93,18 @@ class WelcomePage extends StatelessWidget {
                           );
                         },
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.teal),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
+                          side: const BorderSide(color: Colors.teal),
                         ),
                         child: const Text(
                           'Log In',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.teal,
                             fontWeight: FontWeight.bold,
+                            color: Colors.teal,
                           ),
                         ),
                       ),
@@ -112,7 +112,7 @@ class WelcomePage extends StatelessWidget {
                   ],
                 ),
 
-                const Spacer(),
+                const SizedBox(height: 24),
               ],
             ),
           ),
