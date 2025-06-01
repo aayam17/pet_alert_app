@@ -11,9 +11,20 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.teal.shade700,
       ),
       body: const Center(
-        child: Text(
-          'Welcome to your profile!',
-          style: TextStyle(fontSize: 18),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.person_outline,
+              size: 60,
+              color: Colors.teal,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Welcome to your profile!',
+              style: TextStyle(fontSize: 18),
+            ),
+          ],
         ),
       ),
     );
