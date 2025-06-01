@@ -11,9 +11,20 @@ class AlertsScreen extends StatelessWidget {
         backgroundColor: Colors.teal.shade700,
       ),
       body: const Center(
-        child: Text(
-          'No alerts at the moment.',
-          style: TextStyle(fontSize: 18),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.notifications_none,
+              size: 60,
+              color: Colors.teal,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'No alerts at the moment.',
+              style: TextStyle(fontSize: 18),
+            ),
+          ],
         ),
       ),
     );
