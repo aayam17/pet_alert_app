@@ -13,7 +13,7 @@ class _DashboardState extends State<Dashboard> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const SizedBox(), 
+    const SizedBox(),
     const AlertsScreen(),
     const ProfileScreen(),
   ];
@@ -21,7 +21,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentIndex == 0 ? _buildDashboardContent() : _screens[_currentIndex],
+      body: _currentIndex == 0
+          ? _buildDashboardContent()
+          : _screens[_currentIndex],
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -65,9 +67,9 @@ class _DashboardState extends State<Dashboard> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Spacer(),
+              const SizedBox(height: 30),
 
               Icon(
                 Icons.dashboard,
@@ -75,14 +77,12 @@ class _DashboardState extends State<Dashboard> {
                 color: Colors.teal.shade700,
               ),
 
-              const SizedBox(height: 30),
-
               const Text(
                 'Welcome to your Dashboard',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,     
+                  color: Colors.black87,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -94,14 +94,12 @@ class _DashboardState extends State<Dashboard> {
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
-                  fontFamily: 'PetCareFont',
+                  fontFamily: 'PetCareFont', // fallback if custom font not loaded
                 ),
                 textAlign: TextAlign.center,
               ),
 
               const SizedBox(height: 40),
-
-              const Spacer(),
             ],
           ),
         ),
