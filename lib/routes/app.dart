@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PetAlert',
       theme: AppTheme.lightTheme,
-      home: const SplashScreen(), 
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
