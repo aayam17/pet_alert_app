@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class TermsPage extends StatelessWidget {
   const TermsPage({super.key});
 
@@ -14,6 +13,10 @@ class TermsPage extends StatelessWidget {
           Expanded(
             child: Text(
               title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ),
         ],
@@ -22,8 +25,16 @@ class TermsPage extends StatelessWidget {
   }
 
   Widget _buildSectionText(String text) {
-    return Text(
-      text,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 14.5,
+          color: Colors.black87,
+          height: 1.5,
+        ),
+      ),
     );
   }
 
@@ -31,8 +42,9 @@ class TermsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Terms & Conditions',
+          style: TextStyle(color: Colors.black87),
         ),
         backgroundColor: Colors.grey.shade100,
         iconTheme: const IconThemeData(color: Colors.black87),
@@ -46,8 +58,9 @@ class TermsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Welcome to PetAlert.',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 12),
                 const Divider(color: Colors.teal, thickness: 1.2),
@@ -82,9 +95,10 @@ class TermsPage extends StatelessWidget {
                   'We may update these terms occasionally. Continued use of the app after changes indicates acceptance.',
                 ),
                 const SizedBox(height: 20),
-                Text(
+                const Text(
                   'For questions, please contact our support team.\n\n'
                   'Thank you for trusting PetAlert with your pet care needs.',
+                  style: TextStyle(fontSize: 14.5),
                 ),
               ],
             ),
