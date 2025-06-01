@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'alerts.dart';
+import 'profile.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -11,9 +13,9 @@ class _DashboardState extends State<Dashboard> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    Center(child: Text('Home')),
-    Center(child: Text('Alerts')),
-    Center(child: Text('Profile')),
+    const SizedBox(), 
+    const AlertsScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -88,7 +90,7 @@ class _DashboardState extends State<Dashboard> {
               const SizedBox(height: 16),
 
               const Text(
-                ' Dashboard pet alerts, view updates, and explore features.',
+                'Dashboard pet alerts, view updates, and explore features.',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
