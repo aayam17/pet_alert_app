@@ -1,11 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
-import '../../../data/model/user_model.dart';
-import 'login_event.dart';
-import 'login_state.dart';
+import 'package:pet_alert_app/features/auth/domain/use_case/login_usecase.dart';
+import 'package:pet_alert_app/features/auth/presentation/view_model/login/login_event.dart';
+import 'package:pet_alert_app/features/auth/presentation/view_model/login/login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc() : super(LoginState.initial()) {
+  final LoginUseCase loginUseCase;
+
+  LoginBloc({required this.loginUseCase}) : super(LoginState.initial()) {
     on<LoginSubmitted>(_onLoginSubmitted);
   }
 
@@ -15,20 +16,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     emit(state.copyWith(isLoading: true, error: null));
 
-    final box = Hive.box<AuthApiModel>('users');
-    final user = box.values.firstWhere(
-      (u) => u.email == event.email && u.password == event.password,
-      orElse: () => AuthApiModel(email: '', password: ''),
-    );
+    try {
+      final result = await loginUseCase(event.email, event.password);
 
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (user.email.isEmpty) {
-      emit(state.copyWith(isLoading: false, isSuccess: false, error: 'Invalid credentials'));
-    } else {
-      emit(state.copyWith(isLoading: false, isSuccess: true));
+      if (result) {
+        emit(state.copyWith(isLoading: false, isSuccess: true));
+      } else {
+        emit(state.copyWith(isLoading: false, isSuccess: false, error: 'Invalid credentials'));
+      }
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, isSuccess: false, error: 'Login failed: ${e.toString()}'));
     }
   }
-
 }
-

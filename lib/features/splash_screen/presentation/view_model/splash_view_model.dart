@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_alert_app/app/service_locator/service_locator.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/login/login_bloc.dart';
 
@@ -15,7 +16,7 @@ class SplashViewModel extends Cubit<void> {
         context,
         MaterialPageRoute(
           builder: (context) => BlocProvider(
-            create: (_) => LoginBloc(),
+            create: (_) => LoginBloc(loginUseCase: serviceLocator()),
             child: const LoginPage(),
           ),
         ),

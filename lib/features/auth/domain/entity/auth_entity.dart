@@ -1,4 +1,3 @@
-// lib/features/auth/domain/entity/auth_entity.dart
 
 import 'package:equatable/equatable.dart';
 

@@ -18,13 +18,11 @@ class AuthApiModel extends HiveObject with EquatableMixin {
     required this.password,
   });
 
-  // Convert to Domain Entity
   AuthEntity toEntity() => AuthEntity(
         email: email,
         password: password,
       );
 
-  // Convert from Domain Entity
   factory AuthApiModel.fromEntity(AuthEntity entity) => AuthApiModel(
         email: entity.email,
         password: entity.password,

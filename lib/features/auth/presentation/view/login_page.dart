@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pet_alert_app/app/service_locator/service_locator.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/signup_page.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/login/login_bloc.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/login/login_event.dart';
@@ -26,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     final borderRadius = BorderRadius.circular(12);
 
     return BlocProvider(
-      create: (_) => LoginBloc(),
+      create: (_) => LoginBloc(loginUseCase: serviceLocator()),
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state.isSuccess) {
