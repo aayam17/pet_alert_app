@@ -1,3 +1,4 @@
+// ... previous imports remain unchanged
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,7 +9,6 @@ import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signu
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_state.dart';
 import '../../../home/presentation/view/dashboard.dart';
 import '../../../home/presentation/view/terms_page.dart';
-import '../../../auth/presentation/view/login_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -237,26 +237,6 @@ class _SignupPageState extends State<SignupPage> {
                         child: const FaIcon(FontAwesomeIcons.apple, color: Colors.white),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
-                        (route) => false,
-                      );
-                    },
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Logout to Login'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: borderRadius,
-                      ),
-                    ),
                   ),
                 ],
               ),

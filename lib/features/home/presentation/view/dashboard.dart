@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'home.dart';
 import 'vet_appointments.dart';
 import 'lost_and_found.dart';
@@ -54,6 +55,17 @@ class _DashboardState extends State<Dashboard> {
             label: 'Profile',
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginPage()),
+          );
+        },
+        backgroundColor: Colors.teal.shade700,
+        child: const Icon(Icons.login),
+        tooltip: 'Go to Login',
       ),
     );
   }
