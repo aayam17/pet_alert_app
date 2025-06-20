@@ -155,34 +155,33 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const FaIcon(FontAwesomeIcons.google, color: Colors.red),
-                    label: const Text('Log in with Google'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: Colors.grey.shade300),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: borderRadius,
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.all(16),
+                          shape: const CircleBorder(),
+                          side: BorderSide(color: Colors.grey.shade300),
+                          elevation: 2,
+                        ),
+                        child: const FaIcon(FontAwesomeIcons.google, color: Colors.red),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const FaIcon(FontAwesomeIcons.apple, color: Colors.white),
-                    label: const Text('Log in with Apple'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: borderRadius,
+                      const SizedBox(width: 20),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.all(16),
+                          shape: const CircleBorder(),
+                          elevation: 2,
+                        ),
+                        child: const FaIcon(FontAwesomeIcons.apple, color: Colors.white),
                       ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 30),
                   Row(
