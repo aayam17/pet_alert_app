@@ -1,3 +1,4 @@
+import '../../data/model/user_model.dart';
 import '../entity/auth_entity.dart';
 import '../repository/auth_repository.dart';
 
@@ -6,7 +7,7 @@ class SignupUseCase {
 
   SignupUseCase(this.repository);
 
-  Future<bool> call(AuthEntity user) {
+  Future<AuthApiModel> call(AuthEntity user) {
     return repository.signup(user);
   }
 }

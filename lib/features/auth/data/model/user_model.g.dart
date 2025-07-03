@@ -19,17 +19,23 @@ class AuthApiModelAdapter extends TypeAdapter<AuthApiModel> {
     return AuthApiModel(
       email: fields[0] as String,
       password: fields[1] as String,
+      name: fields[2] as String,
+      token: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, AuthApiModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.email)
       ..writeByte(1)
-      ..write(obj.password);
+      ..write(obj.password)
+      ..writeByte(2)
+      ..write(obj.name)
+      ..writeByte(3)
+      ..write(obj.token);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pet_alert_app/app/service_locator/service_locator.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_bloc.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_event.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_state.dart';
@@ -45,6 +46,7 @@ class _SignupPageState extends State<SignupPage> {
     if (_formKey.currentState!.validate()) {
       context.read<SignupBloc>().add(
             SignupSubmitted(
+              name: _nameController.text.trim(),
               email: _emailController.text.trim(),
               password: _passwordController.text.trim(),
               context: context,
@@ -58,20 +60,26 @@ class _SignupPageState extends State<SignupPage> {
     final borderRadius = BorderRadius.circular(12);
 
     return BlocProvider(
-      create: (_) => SignupBloc(),
+      create: (_) => SignupBloc(signupUseCase: serviceLocator()),
       child: BlocListener<SignupBloc, SignupState>(
-        listener: (context, state) {
-          if (state.isSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const Dashboard()),
-            );
-          } else if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error!)),
-            );
-          }
-        },
+  listener: (context, state) {
+    if (state.isSuccess) {
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Signup successful! Logging you in...')),
+      );
+
+      
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const Dashboard()),
+      );
+    } else if (state.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.error!)),
+      );
+    }
+  },
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.grey.shade200,

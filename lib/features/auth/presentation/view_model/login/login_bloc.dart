@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pet_alert_app/features/auth/domain/use_case/login_usecase.dart';
-import 'package:pet_alert_app/features/auth/presentation/view_model/login/login_event.dart';
-import 'package:pet_alert_app/features/auth/presentation/view_model/login/login_state.dart';
+import '../../../domain/use_case/login_usecase.dart';
+import '../../../data/model/user_model.dart';
+import 'login_event.dart';
+import 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LoginUseCase loginUseCase;
@@ -11,21 +12,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   Future<void> _onLoginSubmitted(
-    LoginSubmitted event,
-    Emitter<LoginState> emit,
+      LoginSubmitted event,
+      Emitter<LoginState> emit,
   ) async {
     emit(state.copyWith(isLoading: true, error: null));
 
     try {
-      final result = await loginUseCase(event.email, event.password);
+      final user = await loginUseCase(event.email, event.password);
 
-      if (result) {
-        emit(state.copyWith(isLoading: false, isSuccess: true));
-      } else {
-        emit(state.copyWith(isLoading: false, isSuccess: false, error: 'Invalid credentials'));
-      }
+      emit(state.copyWith(
+        isLoading: false,
+        isSuccess: true,
+        user: user,
+      ));
     } catch (e) {
-      emit(state.copyWith(isLoading: false, isSuccess: false, error: 'Login failed: ${e.toString()}'));
+      emit(state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        error: 'Login failed: ${e.toString()}',
+      ));
     }
   }
 }

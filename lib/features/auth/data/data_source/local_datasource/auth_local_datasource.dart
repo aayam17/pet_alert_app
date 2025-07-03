@@ -15,7 +15,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<bool> login(String email, String password) async {
     final user = box.values.firstWhere(
       (u) => u.email == email && u.password == password,
-      orElse: () => AuthApiModel(email: '', password: ''),
+      orElse: () => AuthApiModel(email: '', password: '', name: '', token: ''),
     );
     return user.email.isNotEmpty;
   }

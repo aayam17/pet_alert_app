@@ -1,3 +1,4 @@
+import '../../data/model/user_model.dart';
 import '../repository/auth_repository.dart';
 
 class LoginUseCase {
@@ -5,7 +6,7 @@ class LoginUseCase {
 
   LoginUseCase(this.repository);
 
-  Future<bool> call(String email, String password) {
+  Future<AuthApiModel> call(String email, String password) {
     return repository.login(email, password);
   }
 }
