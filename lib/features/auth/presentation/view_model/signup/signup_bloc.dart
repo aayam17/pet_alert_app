@@ -26,7 +26,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       password: event.password,
     ));
 
-    // ✅ Save token to Hive
+    // Save token to Hive
     final box = await Hive.openBox('authBox');
     await box.put('token', user.token);
 

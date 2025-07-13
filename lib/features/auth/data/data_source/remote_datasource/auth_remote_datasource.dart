@@ -12,8 +12,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   AuthRemoteDataSourceImpl(this.client);
 
-  // ✅ Your Mac's IP and the correct auth route prefix
-  final String _baseUrl = 'http://192.168.1.67:3000/api/auth';
+
+  final String _baseUrl = 'http://192.168.1.91:3000/api/auth';
 
   @override
   Future<AuthApiModel> login(String email, String password) async {
