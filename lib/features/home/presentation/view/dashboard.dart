@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'home_screen.dart';
-import 'vet_appointments.dart';
-import 'lost_and_found.dart';
-import 'profile.dart';
+import '../../../vet appointments/presentation/view/vet_appointments.dart';
+import '../../../lost and found/presentation/view/lost_and_found.dart';
+import '../../../settings/presentation/view/settings.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -19,7 +19,7 @@ class _DashboardState extends State<Dashboard> {
     HomeScreen(),
     VetAppointmentsScreen(),
     LostAndFoundScreen(),
-    ProfileScreen(),
+    SettingsScreen(),
   ];
 
   @override
@@ -51,8 +51,8 @@ class _DashboardState extends State<Dashboard> {
             label: 'Lost & Found',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
       ),

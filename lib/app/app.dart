@@ -3,7 +3,7 @@ import 'package:pet_alert_app/app/theme/theme.dart';
 import 'package:pet_alert_app/features/home/presentation/view/dashboard.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/signup_page.dart';
-import 'package:pet_alert_app/features/home/presentation/view/welcome_page.dart';
+import 'package:pet_alert_app/features/splash_screen/presentation/view/welcome_page.dart';
 import 'package:pet_alert_app/features/splash_screen/presentation/view/splash_screen.dart';
 
 class MyApp extends StatelessWidget {

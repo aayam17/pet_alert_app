@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pet_alert_app/features/home/presentation/bloc/pet_profile_cubit.dart';
-import 'package:pet_alert_app/features/home/presentation/bloc/pet_profile_state.dart';
+import 'package:pet_alert_app/features/pet%20profile/presentation/bloc/pet_profile_cubit.dart';
+import 'package:pet_alert_app/features/pet%20profile/presentation/bloc/pet_profile_state.dart';
 
 class PetProfileForm extends StatefulWidget {
   const PetProfileForm({super.key});

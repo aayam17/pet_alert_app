@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pet_alert_app/features/home/presentation/view/home_screen.dart';
-import 'package:pet_alert_app/features/home/presentation/view/lost_and_found.dart';
-import 'package:pet_alert_app/features/home/presentation/view/vet_appointments.dart';
+import 'package:pet_alert_app/features/lost%20and%20found/presentation/view/lost_and_found.dart';
+import 'package:pet_alert_app/features/vet%20appointments/presentation/view/vet_appointments.dart';
+import 'package:pet_alert_app/features/settings/presentation/view/settings.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -17,7 +18,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HomeScreen(),
     VetAppointmentsScreen(),
     LostAndFoundScreen(),
-    Center(child: Text("Profile Screen", style: TextStyle(fontSize: 22))),
+    SettingsScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -49,8 +50,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             label: 'Lost & Found',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
       ),
