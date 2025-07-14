@@ -5,6 +5,7 @@ import 'package:pet_alert_app/app/constant/hive/hive_config.dart';
 import 'package:pet_alert_app/app/service_locator/service_locator.dart';
 import 'package:pet_alert_app/features/splash_screen/presentation/view_model/splash_view_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pet_alert_app/features/home/presentation/bloc/pet_profile_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,8 +19,15 @@ void main() async {
   await setupServiceLocator();
 
   runApp(
-    BlocProvider(
-      create: (_) => SplashViewModel(),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => SplashViewModel(),
+        ),
+        BlocProvider(
+          create: (_) => PetProfileCubit(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
