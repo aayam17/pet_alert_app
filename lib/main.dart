@@ -11,7 +11,7 @@ import 'package:pet_alert_app/features/splash_screen/presentation/view_model/spl
 import 'package:pet_alert_app/features/pet%20profile/presentation/bloc/pet_profile_cubit.dart';
 import 'package:pet_alert_app/features/vet%20appointments/presentation/view_model/vet_appointment_cubit.dart';
 
-// Vet Appointments Cubit
+
 import 'package:pet_alert_app/features/auth/data/model/user_model.dart';
 
 void main() async {
