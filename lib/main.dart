@@ -11,7 +11,7 @@ import 'package:pet_alert_app/features/splash_screen/presentation/view_model/spl
 import 'package:pet_alert_app/features/pet%20profile/presentation/bloc/pet_profile_cubit.dart';
 import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_cubit.dart';
 import 'package:pet_alert_app/features/vet%20appointments/presentation/view_model/vet_appointment_cubit.dart';
-
+import 'package:pet_alert_app/features/lost%20and%20found/presentation/view_model/lost_and_found_cubit.dart';
 
 // Hive Models
 import 'package:pet_alert_app/features/auth/data/model/user_model.dart';
@@ -21,7 +21,7 @@ void main() async {
 
   await Hive.initFlutter();
 
-  // Register adapters
+  // Register Hive adapters
   await initHive();
 
   // Register all dependencies
@@ -38,6 +38,9 @@ void main() async {
 
         // ✅ Vaccination Records
         BlocProvider(create: (_) => serviceLocator<VaccinationCubit>()),
+
+        // ✅ Lost and Found
+        BlocProvider(create: (_) => serviceLocator<LostAndFoundCubit>()),
       ],
       child: const MyApp(),
     ),

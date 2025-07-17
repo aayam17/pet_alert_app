@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import '../../../domain/use_case/signup_usecase.dart';
-import '../../../data/model/user_model.dart';
 import '../../../domain/entity/auth_entity.dart';
 import 'signup_event.dart';
 import 'signup_state.dart';
