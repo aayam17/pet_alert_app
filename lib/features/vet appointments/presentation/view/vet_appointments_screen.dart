@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pet_alert_app/features/vet%20appointments/domain/entity/appointment_entity.dart';
+import '../view_model/vet_appointment_cubit.dart';
+import '../view_model/vet_appointment_state.dart';
 
 class VetAppointmentsScreen extends StatefulWidget {
   const VetAppointmentsScreen({super.key});
@@ -9,40 +13,15 @@ class VetAppointmentsScreen extends StatefulWidget {
 }
 
 class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
-  List<Map<String, dynamic>> appointments = [];
-
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   TextEditingController notesController = TextEditingController();
-
   String? editingId;
 
   @override
   void initState() {
     super.initState();
-    fetchAppointments();
-  }
-
-  /// Replace this with your actual API calls
-  Future<void> fetchAppointments() async {
-    // Simulate fetch
-    await Future.delayed(const Duration(milliseconds: 500));
-    setState(() {
-      appointments = [
-        {
-          '_id': '1',
-          'date': '2025-07-12',
-          'time': '10:30 AM',
-          'notes': 'Annual checkup'
-        },
-        {
-          '_id': '2',
-          'date': '2025-07-15',
-          'time': '2:00 PM',
-          'notes': 'Vaccination'
-        },
-      ];
-    });
+    context.read<VetAppointmentCubit>().loadAppointments();
   }
 
   void resetForm() {
@@ -60,55 +39,43 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
       return;
     }
 
-    final formattedDate =
-        DateFormat('yyyy-MM-dd').format(selectedDate!);
+    final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate!);
+    final formattedTime = "${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}";
 
-    final formattedTime =
-        selectedTime!.format(context);
+    final appt = AppointmentEntity(
+      id: editingId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      date: formattedDate,
+      time: formattedTime,
+      notes: notesController.text,
+    );
 
-    final newAppointment = {
-      '_id': editingId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      'date': formattedDate,
-      'time': formattedTime,
-      'notes': notesController.text,
-    };
+    if (editingId != null) {
+      context.read<VetAppointmentCubit>().updateAppointment(editingId!, appt);
+    } else {
+      context.read<VetAppointmentCubit>().addAppointment(appt);
+    }
 
-    setState(() {
-      if (editingId != null) {
-        // Update existing
-        appointments = appointments.map((appt) {
-          if (appt['_id'] == editingId) {
-            return newAppointment;
-          }
-          return appt;
-        }).toList();
-      } else {
-        // Add new
-        appointments.add(newAppointment);
-      }
-      resetForm();
-    });
+    resetForm();
   }
 
-  void handleEdit(Map<String, dynamic> appt) {
+  void handleEdit(AppointmentEntity appt) {
     setState(() {
-      editingId = appt['_id'];
-      selectedDate = DateTime.parse(appt['date']);
-      selectedTime = _parseTime(appt['time']);
-      notesController.text = appt['notes'];
-    });
-  }
-
-  void handleDelete(String id) {
-    setState(() {
-      appointments.removeWhere((appt) => appt['_id'] == id);
+      editingId = appt.id;
+      selectedDate = DateTime.parse(appt.date);
+      selectedTime = _parseTime(appt.time);
+      notesController.text = appt.notes;
     });
   }
 
   TimeOfDay _parseTime(String timeString) {
-    final format = DateFormat.jm(); // e.g. 2:00 PM
-    final dateTime = format.parse(timeString);
-    return TimeOfDay.fromDateTime(dateTime);
+    try {
+      final format = DateFormat.Hm(); // 24-hour format: "13:20"
+      final dateTime = format.parse(timeString);
+      return TimeOfDay.fromDateTime(dateTime);
+    } catch (e) {
+      debugPrint("Failed to parse time: $timeString — $e");
+      return TimeOfDay.now(); // fallback
+    }
   }
 
   @override
@@ -130,7 +97,6 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    /// Date picker
                     Row(
                       children: [
                         const Text('Date:'),
@@ -139,8 +105,7 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
                           onPressed: () async {
                             final date = await showDatePicker(
                               context: context,
-                              initialDate:
-                                  selectedDate ?? DateTime.now(),
+                              initialDate: selectedDate ?? DateTime.now(),
                               firstDate: DateTime(2000),
                               lastDate: DateTime(2100),
                             );
@@ -153,14 +118,11 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
                           child: Text(
                             selectedDate == null
                                 ? 'Select date'
-                                : DateFormat('yyyy-MM-dd')
-                                    .format(selectedDate!),
+                                : DateFormat('yyyy-MM-dd').format(selectedDate!),
                           ),
                         )
                       ],
                     ),
-
-                    /// Time picker
                     Row(
                       children: [
                         const Text('Time:'),
@@ -169,8 +131,7 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
                           onPressed: () async {
                             final time = await showTimePicker(
                               context: context,
-                              initialTime:
-                                  selectedTime ?? TimeOfDay.now(),
+                              initialTime: selectedTime ?? TimeOfDay.now(),
                             );
                             if (time != null) {
                               setState(() {
@@ -181,20 +142,15 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
                           child: Text(
                             selectedTime == null
                                 ? 'Select time'
-                                : selectedTime!.format(context),
+                                : "${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}",
                           ),
                         )
                       ],
                     ),
-
-                    /// Notes
                     TextFormField(
                       controller: notesController,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Notes'),
                     ),
-
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: handleSubmit,
@@ -209,28 +165,44 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
 
             const SizedBox(height: 24),
 
-            /// Appointments List
-            ...appointments.map(
-              (appt) => Card(
-                child: ListTile(
-                  title: Text(
-                      'Date: ${appt['date']}  |  Time: ${appt['time']}'),
-                  subtitle: Text(appt['notes']),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () => handleEdit(appt),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => handleDelete(appt['_id']),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            /// Appointment List
+            BlocBuilder<VetAppointmentCubit, VetAppointmentState>(
+              builder: (context, state) {
+                if (state is VetAppointmentLoading) {
+                  return const CircularProgressIndicator();
+                } else if (state is VetAppointmentLoaded) {
+                  return Column(
+                    children: state.appointments.map((appt) {
+                      return Card(
+                        child: ListTile(
+                          title: Text('Date: ${appt.date}  |  Time: ${appt.time}'),
+                          subtitle: Text(appt.notes),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.blue),
+                                onPressed: () => handleEdit(appt),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  context
+                                      .read<VetAppointmentCubit>()
+                                      .deleteAppointment(appt.id);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                } else if (state is VetAppointmentError) {
+                  return Text(state.message);
+                }
+                return const SizedBox();
+              },
             ),
           ],
         ),

@@ -13,7 +13,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl(this.client);
 
 
-  final String _baseUrl = 'http://192.168.1.91:3000/api/auth';
+ final String _baseUrl = 'http://127.0.0.1:3000/api/auth';
+
 
   @override
   Future<AuthApiModel> login(String email, String password) async {

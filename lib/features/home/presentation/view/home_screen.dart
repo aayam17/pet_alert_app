@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pet_alert_app/features/home/presentation/view/widgets/dashboard_card.dart';
 import 'package:pet_alert_app/features/pet%20profile/presentation/view/pet_profile_form.dart';
-import '../../../vet appointments/presentation/view/vet_appointments.dart';
+import '../../../vet appointments/presentation/view/vet_appointments_screen.dart';
 import '../../../vaccination records/presentation/view/vaccination_records_screen.dart';
 import '../../../lost and found/presentation/view/lost_and_found.dart';
 import '../../../memorials/presentation/view/memorials_screen.dart';
