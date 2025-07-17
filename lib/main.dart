@@ -12,6 +12,7 @@ import 'package:pet_alert_app/features/pet%20profile/presentation/bloc/pet_profi
 import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_cubit.dart';
 import 'package:pet_alert_app/features/vet%20appointments/presentation/view_model/vet_appointment_cubit.dart';
 import 'package:pet_alert_app/features/lost%20and%20found/presentation/view_model/lost_and_found_cubit.dart';
+import 'package:pet_alert_app/features/memorials/presentation/view_model/memorial_cubit.dart'; 
 
 // Hive Models
 import 'package:pet_alert_app/features/auth/data/model/user_model.dart';
@@ -41,6 +42,9 @@ void main() async {
 
         // ✅ Lost and Found
         BlocProvider(create: (_) => serviceLocator<LostAndFoundCubit>()),
+
+        // ✅ Memorials
+        BlocProvider(create: (_) => serviceLocator<MemorialCubit>()),
       ],
       child: const MyApp(),
     ),
