@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:pet_alert_app/features/vaccination%20records/domain/entity/vaccination_record_entity.dart';
+import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_cubit.dart';
+import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_state.dart';
 
 class VaccinationRecordsScreen extends StatefulWidget {
   const VaccinationRecordsScreen({super.key});
@@ -9,40 +13,15 @@ class VaccinationRecordsScreen extends StatefulWidget {
 }
 
 class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
-  List<Map<String, dynamic>> records = [];
-
   DateTime? selectedDate;
   TextEditingController vaccineController = TextEditingController();
   TextEditingController notesController = TextEditingController();
-
   String? editingId;
 
   @override
   void initState() {
     super.initState();
-    fetchRecords();
-  }
-
-  /// Replace this with your actual API calls
-  Future<void> fetchRecords() async {
-    // Simulate network call
-    await Future.delayed(const Duration(milliseconds: 500));
-    setState(() {
-      records = [
-        {
-          '_id': '1',
-          'date': '2025-06-20',
-          'vaccine': 'Rabies',
-          'notes': 'Booster needed in 1 year',
-        },
-        {
-          '_id': '2',
-          'date': '2025-07-10',
-          'vaccine': 'Parvovirus',
-          'notes': '',
-        },
-      ];
-    });
+    context.read<VaccinationCubit>().loadRecords();
   }
 
   void resetForm() {
@@ -60,45 +39,30 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
       return;
     }
 
-    final formattedDate =
-        DateFormat('yyyy-MM-dd').format(selectedDate!);
+    final formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate!);
 
-    final newRecord = {
-      '_id': editingId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      'date': formattedDate,
-      'vaccine': vaccineController.text.trim(),
-      'notes': notesController.text.trim(),
-    };
+    final record = VaccinationRecordEntity(
+      id: editingId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      date: formattedDate,
+      vaccine: vaccineController.text.trim(),
+      notes: notesController.text.trim(),
+    );
 
-    setState(() {
-      if (editingId != null) {
-        // Update
-        records = records.map((rec) {
-          if (rec['_id'] == editingId) {
-            return newRecord;
-          }
-          return rec;
-        }).toList();
-      } else {
-        // Add new
-        records.add(newRecord);
-      }
-      resetForm();
-    });
+    if (editingId != null) {
+      context.read<VaccinationCubit>().updateRecord(editingId!, record);
+    } else {
+      context.read<VaccinationCubit>().addRecord(record);
+    }
+
+    resetForm();
   }
 
-  void handleEdit(Map<String, dynamic> record) {
+  void handleEdit(VaccinationRecordEntity record) {
     setState(() {
-      editingId = record['_id'];
-      selectedDate = DateTime.parse(record['date']);
-      vaccineController.text = record['vaccine'];
-      notesController.text = record['notes'];
-    });
-  }
-
-  void handleDelete(String id) {
-    setState(() {
-      records.removeWhere((rec) => rec['_id'] == id);
+      editingId = record.id;
+      selectedDate = DateTime.parse(record.date);
+      vaccineController.text = record.vaccine;
+      notesController.text = record.notes;
     });
   }
 
@@ -114,7 +78,7 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// Form
+            /// Form Section
             Card(
               elevation: 3,
               child: Padding(
@@ -130,8 +94,7 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                           onPressed: () async {
                             final date = await showDatePicker(
                               context: context,
-                              initialDate:
-                                  selectedDate ?? DateTime.now(),
+                              initialDate: selectedDate ?? DateTime.now(),
                               firstDate: DateTime(2000),
                               lastDate: DateTime(2100),
                             );
@@ -144,8 +107,7 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                           child: Text(
                             selectedDate == null
                                 ? 'Select date'
-                                : DateFormat('yyyy-MM-dd')
-                                    .format(selectedDate!),
+                                : DateFormat('yyyy-MM-dd').format(selectedDate!),
                           ),
                         ),
                       ],
@@ -154,26 +116,20 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                     /// Vaccine Name
                     TextFormField(
                       controller: vaccineController,
-                      decoration: const InputDecoration(
-                        labelText: "Vaccine Name",
-                      ),
+                      decoration: const InputDecoration(labelText: "Vaccine Name"),
                     ),
 
                     /// Notes
                     TextFormField(
                       controller: notesController,
-                      decoration: const InputDecoration(
-                        labelText: "Notes",
-                      ),
+                      decoration: const InputDecoration(labelText: "Notes"),
                       maxLines: 3,
                     ),
 
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: handleSubmit,
-                      child: Text(editingId != null
-                          ? 'Update Record'
-                          : 'Add Record'),
+                      child: Text(editingId != null ? 'Update Record' : 'Add Record'),
                     ),
                   ],
                 ),
@@ -182,40 +138,47 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
 
             const SizedBox(height: 24),
 
-            /// Records List
-            records.isNotEmpty
-                ? Column(
-                    children: records.map(
-                      (record) {
-                        return Card(
-                          child: ListTile(
-                            title: Text(
-                                '${record['date']} - ${record['vaccine']}'),
-                            subtitle: record['notes'].isNotEmpty
-                                ? Text('Notes: ${record['notes']}')
-                                : null,
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit,
-                                      color: Colors.blue),
-                                  onPressed: () => handleEdit(record),
+            /// List Section
+            BlocBuilder<VaccinationCubit, VaccinationState>(
+              builder: (context, state) {
+                if (state is VaccinationLoading) {
+                  return const CircularProgressIndicator();
+                } else if (state is VaccinationLoaded) {
+                  return state.records.isEmpty
+                      ? const Text("No vaccination records added.")
+                      : Column(
+                          children: state.records.map((record) {
+                            return Card(
+                              child: ListTile(
+                                title: Text('${record.date} - ${record.vaccine}'),
+                                subtitle: record.notes.isNotEmpty
+                                    ? Text('Notes: ${record.notes}')
+                                    : null,
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.edit, color: Colors.blue),
+                                      onPressed: () => handleEdit(record),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () {
+                                        context.read<VaccinationCubit>().deleteRecord(record.id);
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red),
-                                  onPressed: () =>
-                                      handleDelete(record['_id']),
-                                ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          }).toList(),
                         );
-                      },
-                    ).toList(),
-                  )
-                : const Text("No vaccination records added."),
+                } else if (state is VaccinationError) {
+                  return Text(state.message, style: const TextStyle(color: Colors.red));
+                }
+                return const SizedBox();
+              },
+            ),
           ],
         ),
       ),

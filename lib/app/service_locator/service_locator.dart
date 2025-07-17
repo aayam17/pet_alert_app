@@ -22,82 +22,82 @@ import 'package:pet_alert_app/features/vet%20appointments/domain/use_case/get_ap
 import 'package:pet_alert_app/features/vet%20appointments/domain/use_case/update_vet_appointment_use_case.dart';
 import 'package:pet_alert_app/features/vet%20appointments/presentation/view_model/vet_appointment_cubit.dart';
 
+// Vaccination Records
+import 'package:pet_alert_app/features/vaccination%20records/data/data_source/remote_datasource/vaccination_remote_datasource.dart';
+import 'package:pet_alert_app/features/vaccination%20records/data/data_source/remote_datasource/vaccination_remote_datasource_impl.dart';
+import 'package:pet_alert_app/features/vaccination%20records/data/repository/remote_repository/vaccination_repository_impl.dart' hide VaccinationRemoteDataSourceImpl;
+import 'package:pet_alert_app/features/vaccination%20records/domain/repository/vaccination_repository.dart';
+import 'package:pet_alert_app/features/vaccination%20records/domain/use_case/add_vaccination_record_use_case.dart';
+import 'package:pet_alert_app/features/vaccination%20records/domain/use_case/delete_vaccination_record_use_case.dart';
+import 'package:pet_alert_app/features/vaccination%20records/domain/use_case/get_vaccination_records_use_case.dart';
+import 'package:pet_alert_app/features/vaccination%20records/domain/use_case/update_vaccination_record_use_case.dart';
+import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_cubit.dart';
+
 final serviceLocator = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
-  // ✅ Open Hive box
+  // ✅ Hive box for user auth token storage
   final userBox = await Hive.openBox<AuthApiModel>('users');
-
-  // ✅ Register Hive Box
   serviceLocator.registerSingleton<Box<AuthApiModel>>(userBox);
-
-  // ========== AUTH ==========
-
-  // ✅ Local data source
-  serviceLocator.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSourceImpl(
-      serviceLocator<Box<AuthApiModel>>(),
-    ),
-  );
-
-  // ✅ Remote data source
-  serviceLocator.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(
-      http.Client(),
-    ),
-  );
-
-  // ✅ Auth repository
-  serviceLocator.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(
-      localDataSource: serviceLocator<AuthLocalDataSource>(),
-      remoteDataSource: serviceLocator<AuthRemoteDataSource>(),
-    ),
-  );
-
-  // ✅ Use cases
-  serviceLocator.registerLazySingleton<LoginUseCase>(
-    () => LoginUseCase(serviceLocator<AuthRepository>()),
-  );
-
-  serviceLocator.registerLazySingleton<SignupUseCase>(
-    () => SignupUseCase(serviceLocator<AuthRepository>()),
-  );
-
-  // ========== VET APPOINTMENTS ==========
 
   // ✅ External HTTP Client
   serviceLocator.registerLazySingleton(() => http.Client());
 
-  // ✅ Remote data source
+  // ================= AUTH =================
+  serviceLocator.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(serviceLocator<Box<AuthApiModel>>()),
+  );
+
+  serviceLocator.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(serviceLocator<http.Client>()),
+  );
+
+  serviceLocator.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(
+      localDataSource: serviceLocator(),
+      remoteDataSource: serviceLocator(),
+    ),
+  );
+
+  serviceLocator.registerLazySingleton(() => LoginUseCase(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => SignupUseCase(serviceLocator()));
+
+  // ================= VET APPOINTMENTS =================
   serviceLocator.registerLazySingleton<VetAppointmentRemoteDataSource>(
-    () => VetAppointmentRemoteDataSourceImpl(serviceLocator<http.Client>()),
+    () => VetAppointmentRemoteDataSourceImpl(serviceLocator()),
   );
 
-  // ✅ Repository
   serviceLocator.registerLazySingleton<AppointmentRepository>(
-    () => VetAppointmentRepositoryImpl(serviceLocator<VetAppointmentRemoteDataSource>()),
+    () => VetAppointmentRepositoryImpl(serviceLocator()),
   );
 
-  // ✅ Use cases
-  serviceLocator.registerLazySingleton(
-    () => GetAppointmentsUseCase(serviceLocator<AppointmentRepository>()),
-  );
+  serviceLocator.registerLazySingleton(() => GetAppointmentsUseCase(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => AddVetAppointmentUseCase(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => UpdateVetAppointmentUseCase(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => DeleteVetAppointmentUseCase(serviceLocator()));
 
-  serviceLocator.registerLazySingleton(
-    () => AddVetAppointmentUseCase(serviceLocator<AppointmentRepository>()),
-  );
-
-  serviceLocator.registerLazySingleton(
-    () => UpdateVetAppointmentUseCase(serviceLocator<AppointmentRepository>()),
-  );
-
-  serviceLocator.registerLazySingleton(
-    () => DeleteVetAppointmentUseCase(serviceLocator<AppointmentRepository>()),
-  );
-
-  // ✅ Cubit
   serviceLocator.registerFactory(() => VetAppointmentCubit(
+        getUseCase: serviceLocator(),
+        addUseCase: serviceLocator(),
+        updateUseCase: serviceLocator(),
+        deleteUseCase: serviceLocator(),
+      ));
+
+  // ================= VACCINATION RECORDS =================
+  serviceLocator.registerLazySingleton<VaccinationRemoteDataSource>(
+    () => VaccinationRemoteDataSourceImpl(serviceLocator()),
+  );
+
+  serviceLocator.registerLazySingleton<VaccinationRepository>(
+    () => VaccinationRepositoryImpl(serviceLocator()),
+  );
+
+  serviceLocator.registerLazySingleton(() => GetVaccinationRecordsUseCase(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => AddVaccinationRecordUseCase(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => UpdateVaccinationRecordUseCase(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => DeleteVaccinationRecordUseCase(serviceLocator()));
+
+  serviceLocator.registerFactory(() => VaccinationCubit(
         getUseCase: serviceLocator(),
         addUseCase: serviceLocator(),
         updateUseCase: serviceLocator(),

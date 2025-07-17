@@ -6,12 +6,14 @@ import 'package:pet_alert_app/app/app.dart';
 import 'package:pet_alert_app/app/constant/hive/hive_config.dart';
 import 'package:pet_alert_app/app/service_locator/service_locator.dart';
 
-// Splash & Profile Cubits
+// Cubits
 import 'package:pet_alert_app/features/splash_screen/presentation/view_model/splash_view_model.dart';
 import 'package:pet_alert_app/features/pet%20profile/presentation/bloc/pet_profile_cubit.dart';
+import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_cubit.dart';
 import 'package:pet_alert_app/features/vet%20appointments/presentation/view_model/vet_appointment_cubit.dart';
 
 
+// Hive Models
 import 'package:pet_alert_app/features/auth/data/model/user_model.dart';
 
 void main() async {
@@ -19,8 +21,7 @@ void main() async {
 
   await Hive.initFlutter();
 
-
-  // Initialize Hive adapters
+  // Register adapters
   await initHive();
 
   // Register all dependencies
@@ -32,10 +33,11 @@ void main() async {
         BlocProvider(create: (_) => SplashViewModel()),
         BlocProvider(create: (_) => PetProfileCubit()),
 
-        // ✅ Inject VetAppointmentCubit from service locator
-        BlocProvider(
-          create: (_) => serviceLocator<VetAppointmentCubit>(),
-        ),
+        // ✅ Vet Appointments
+        BlocProvider(create: (_) => serviceLocator<VetAppointmentCubit>()),
+
+        // ✅ Vaccination Records
+        BlocProvider(create: (_) => serviceLocator<VaccinationCubit>()),
       ],
       child: const MyApp(),
     ),
