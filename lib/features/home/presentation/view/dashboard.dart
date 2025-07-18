@@ -26,6 +26,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (int newIndex) {
@@ -55,17 +56,6 @@ class _DashboardState extends State<Dashboard> {
             label: 'Settings',
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginPage()),
-          );
-        },
-        backgroundColor: Colors.teal.shade700,
-        child: const Icon(Icons.login),
-        tooltip: 'Go to Login',
       ),
     );
   }

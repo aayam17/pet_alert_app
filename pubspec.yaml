@@ -62,7 +62,7 @@ dependencies:
   mocktail: ^1.0.4
   bloc_test: ^10.0.0
   intl: ^0.18.1
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -86,7 +86,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/
+    - assets/user.png
+    - assets/logo_pet.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

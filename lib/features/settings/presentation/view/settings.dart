@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'widgets/about_us_screen.dart';
 import 'widgets/contact_us_screen.dart';
 import 'widgets/faq_screen.dart';
+// import 'package:shared_preferences/shared_preferences.dart'; // Optional
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,11 +23,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void handleLogout() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Logged out.")),
+  Future<void> handleLogout() async {
+    // Optional: Clear saved session data
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.clear();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
     );
-    // Navigate to login screen if needed
   }
 
   @override
@@ -91,7 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 40),
 
-          /// Logout button
+          /// Logout
           Center(
             child: TextButton.icon(
               onPressed: handleLogout,
