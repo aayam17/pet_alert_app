@@ -5,7 +5,6 @@ import '../../../vaccination records/presentation/view/vaccination_records_scree
 import '../../../lost and found/presentation/view/lost_and_found.dart';
 import '../../../memorials/presentation/view/memorials_screen.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -25,59 +24,59 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
-     appBar: AppBar(
-  backgroundColor: Colors.white,
-  elevation: 0,
-  titleSpacing: 0, // removes default spacing
-  title: Row(
-    children: const [
-      Padding(
-        padding: EdgeInsets.only(left: 16),
-        child: Text(
-          "PetAlert",
-          style: TextStyle(
-            color: Color(0xFF5A4FCF),
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
-      ),
-    ],
-  ),
-  actions: [
-    // Notification Icon
-    Stack(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none, color: Color(0xFF5A4FCF), size: 28),
-          onPressed: () => setState(() => showNotifications = !showNotifications),
-        ),
-        if (notifications.isNotEmpty)
-          Positioned(
-            right: 6,
-            top: 8,
-            child: Container(
-              padding: const EdgeInsets.all(5),
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                '${notifications.length}',
-                style: const TextStyle(color: Colors.white, fontSize: 10),
-              ),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        titleSpacing: 0,
+        title: const Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: Text(
+            "PetAlert",
+            style: TextStyle(
+              color: Color(0xFF5A4FCF),
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
             ),
           ),
-      ],
-    ),
-  ],
-),
-
+        ),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_none,
+                    color: Color(0xFF5A4FCF), size: 28),
+                onPressed: () =>
+                    setState(() => showNotifications = !showNotifications),
+              ),
+              if (notifications.isNotEmpty)
+                Positioned(
+                  right: 6,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${notifications.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Stack(
           children: [
             SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -101,14 +100,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  /// COMMUNITY BOARD BUTTON
-                    Container(
+                  /// COMMUNITY BOARD BUTTON (FIXED)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const CommunityBoardScreen()),
+                      );
+                    },
+                    child: Container(
                       margin: const EdgeInsets.only(top: 12),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 14),
                       decoration: BoxDecoration(
-                        color: Color(0xFFFFF3C7),
+                        color: const Color(0xFFFFF3C7),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Color(0xFFFFD369)),
+                        border: Border.all(color: const Color(0xFFFFD369)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
@@ -117,29 +125,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      child: GestureDetector(
-                        onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const CommunityBoardScreen()),
-                        );
-                      },
-
-                        child: Center(
-                          child: Text(
-                            "Go to Community Board",
-                            style: TextStyle(
-                              color: Color(0xFF2D2D2D),
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              letterSpacing: 0.3,
-                            ),
+                      child: const Center(
+                        child: Text(
+                          "Go to Community Board",
+                          style: TextStyle(
+                            color: Color(0xFF2D2D2D),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            letterSpacing: 0.3,
                           ),
                         ),
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 24), 
+                  const SizedBox(height: 24),
 
                   /// SECTION TITLE
                   const Text(
@@ -167,7 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         subtitle: "Book & track vet visits",
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const VetAppointmentsScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const VetAppointmentsScreen()),
                         ),
                       ),
                       _buildGridCard(
@@ -176,7 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         subtitle: "Manage vaccinations",
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const VaccinationRecordsScreen()),
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const VaccinationRecordsScreen()),
                         ),
                       ),
                       _buildGridCard(
@@ -185,7 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         subtitle: "Report or search pets",
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const LostAndFoundScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const LostAndFoundScreen()),
                         ),
                       ),
                       _buildGridCard(
@@ -194,7 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         subtitle: "Tributes & memories",
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const MemorialsScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const MemorialsScreen()),
                         ),
                       ),
                     ],
@@ -221,18 +226,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: notifications
-                          .map((note) => Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Icon(Icons.info_outline,
-                                        size: 18, color: Color(0xFF5A4FCF)),
-                                    const SizedBox(width: 8),
-                                    Expanded(child: Text(note)),
-                                  ],
-                                ),
-                              ))
+                          .map(
+                            (note) => Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(Icons.info_outline,
+                                      size: 18, color: Color(0xFF5A4FCF)),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(note)),
+                                ],
+                              ),
+                            ),
+                          )
                           .toList(),
                     ),
                   ),

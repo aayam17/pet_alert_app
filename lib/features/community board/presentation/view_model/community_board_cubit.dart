@@ -26,5 +26,7 @@ class CommunityBoardCubit extends Cubit<CommunityBoardState> {
     }
   }
 
-  void loadBoard() {}
+  void loadBoard() {
+    loadData(); 
+  }
 }

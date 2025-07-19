@@ -45,7 +45,7 @@ void main() async {
         // ✅ Memorials
         BlocProvider(create: (_) => serviceLocator<MemorialCubit>()),
 
-        // ✅ Add this for Community Board
+        // ✅ Community Board
         BlocProvider(create: (_) => serviceLocator<CommunityBoardCubit>()..loadData()),
       ],
       child: const MyApp(),
