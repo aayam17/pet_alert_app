@@ -1,14 +1,13 @@
-// ... previous imports remain unchanged
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_alert_app/app/service_locator/service_locator.dart';
+import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_bloc.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_event.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_state.dart';
-import '../../../home/presentation/view/dashboard.dart';
 import 'terms_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -62,196 +61,195 @@ class _SignupPageState extends State<SignupPage> {
     return BlocProvider(
       create: (_) => SignupBloc(signupUseCase: serviceLocator()),
       child: BlocListener<SignupBloc, SignupState>(
-  listener: (context, state) {
-    if (state.isSuccess) {
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signup successful! Logging you in...')),
-      );
-
-      
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const Dashboard()),
-      );
-    } else if (state.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(state.error!)),
-      );
-    }
-  },
+        listener: (context, state) {
+          if (state.isSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Signup successful! Please log in.')),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+            );
+          } else if (state.error != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.error!)),
+            );
+          }
+        },
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.grey.shade200,
-            elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.black),
-            title: Text(
-              'Sign Up',
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  Text(
-                    'Join PetAlert!',
-                    style: GoogleFonts.poppins(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    Text(
+                      'Join PetAlert!',
+                      style: GoogleFonts.poppins(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                        letterSpacing: 0.3,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 40),
-                  TextFormField(
-                    controller: _nameController,
-                    validator: (val) =>
-                        val == null || val.isEmpty ? 'Enter your full name' : null,
-                    decoration: InputDecoration(
-                      labelText: 'Full Name',
-                      prefixIcon: const Icon(Icons.person),
-                      border: OutlineInputBorder(borderRadius: borderRadius),
+                    const SizedBox(height: 40),
+                    TextFormField(
+                      controller: _nameController,
+                      validator: (val) =>
+                          val == null || val.isEmpty ? 'Enter your full name' : null,
+                      decoration: InputDecoration(
+                        labelText: 'Full Name',
+                        prefixIcon: const Icon(Icons.person),
+                        border: OutlineInputBorder(borderRadius: borderRadius),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _emailController,
-                    validator: (val) {
-                      if (val == null || val.isEmpty) return 'Enter your email';
-                      final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                      return regex.hasMatch(val) ? null : 'Enter a valid email';
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email),
-                      border: OutlineInputBorder(borderRadius: borderRadius),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _emailController,
+                      validator: (val) {
+                        if (val == null || val.isEmpty) return 'Enter your email';
+                        final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                        return regex.hasMatch(val) ? null : 'Enter a valid email';
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: const Icon(Icons.email),
+                        border: OutlineInputBorder(borderRadius: borderRadius),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    validator: (val) =>
-                        val == null || val.length < 6 ? 'Min 6 characters' : null,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      validator: (val) =>
+                          val == null || val.length < 6 ? 'Min 6 characters' : null,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() => _obscurePassword = !_obscurePassword);
+                          },
                         ),
-                        onPressed: () {
-                          setState(() => _obscurePassword = !_obscurePassword);
-                        },
+                        border: OutlineInputBorder(borderRadius: borderRadius),
                       ),
-                      border: OutlineInputBorder(borderRadius: borderRadius),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _agreedToTerms,
-                        onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
-                      ),
-                      Expanded(
-                        child: RichText(
-                          text: TextSpan(
-                            style: const TextStyle(color: Colors.black),
-                            children: [
-                              const TextSpan(text: 'I agree to the '),
-                              TextSpan(
-                                text: 'Terms & Conditions',
-                                style: const TextStyle(
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => const TermsPage(),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _agreedToTerms,
+                          onChanged: (val) =>
+                              setState(() => _agreedToTerms = val ?? false),
+                        ),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: GoogleFonts.poppins(color: Colors.black),
+                              children: [
+                                const TextSpan(text: 'I agree to the '),
+                                TextSpan(
+                                  text: 'Terms & Conditions',
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => const TermsPage(),
+                                          ),
                                         ),
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  BlocBuilder<SignupBloc, SignupState>(
-                    builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: state.isLoading ? null : () => _onSubmit(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black87,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: borderRadius,
-                          ),
-                        ),
-                        child: state.isLoading
-                            ? const CircularProgressIndicator(color: Colors.white)
-                            : Text(
-                                'Sign Up',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
                                 ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 40),
+                    BlocBuilder<SignupBloc, SignupState>(
+                      builder: (context, state) {
+                        return SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: state.isLoading ? null : () => _onSubmit(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: borderRadius,
                               ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  Text(
-                    "Or sign up with",
-                    style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.all(16),
-                          shape: const CircleBorder(),
-                          side: BorderSide(color: Colors.grey.shade300),
-                          elevation: 2,
+                            ),
+                            child: state.isLoading
+                                ? const CircularProgressIndicator(color: Colors.white)
+                                : const Text(
+                                    'Sign Up',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 30),
+                    Text(
+                      "Or sign up with",
+                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildSocialButton(
+                          icon: FontAwesomeIcons.google,
+                          color: Colors.red,
+                          background: Colors.white,
+                          border: BorderSide(color: Colors.grey.shade300),
                         ),
-                        child: const FaIcon(FontAwesomeIcons.google, color: Colors.red),
-                      ),
-                      const SizedBox(width: 20),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          padding: const EdgeInsets.all(16),
-                          shape: const CircleBorder(),
-                          elevation: 2,
+                        const SizedBox(width: 20),
+                        _buildSocialButton(
+                          icon: FontAwesomeIcons.apple,
+                          color: Colors.white,
+                          background: Colors.black,
                         ),
-                        child: const FaIcon(FontAwesomeIcons.apple, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialButton({
+    required IconData icon,
+    required Color color,
+    required Color background,
+    BorderSide? border,
+  }) {
+    return ElevatedButton(
+      onPressed: () {},
+      style: ElevatedButton.styleFrom(
+        backgroundColor: background,
+        padding: const EdgeInsets.all(16),
+        shape: const CircleBorder(),
+        side: border,
+        elevation: 2,
+      ),
+      child: FaIcon(icon, color: color),
     );
   }
 }

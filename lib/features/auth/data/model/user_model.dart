@@ -25,14 +25,15 @@ class AuthApiModel extends HiveObject with EquatableMixin {
     required this.token,
   });
 
+  /// ✅ Safely parses API response and avoids null-related crashes
   factory AuthApiModel.fromJson(Map<String, dynamic> json) {
     final userJson = json['user'] ?? {};
 
     return AuthApiModel(
-      name: userJson['username'] ?? '',
-      email: userJson['email'] ?? '',
-      password: '', // password is not returned
-      token: json['token'] ?? '',
+      name: userJson['username']?.toString() ?? '',
+      email: userJson['email']?.toString() ?? '',
+      password: '', // Not returned by API, leave blank
+      token: json['token']?.toString() ?? '',
     );
   }
 
