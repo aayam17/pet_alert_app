@@ -67,4 +67,16 @@ class AppTheme {
       color: Colors.white,
     ),
   );
+
+  static var textPrimary;
+
+  static var background;
+
+  static var primary;
+
+  static var error;
+
+  static var textSecondary;
+
+  static var accent;
 }

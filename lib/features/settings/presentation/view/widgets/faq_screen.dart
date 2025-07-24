@@ -42,10 +42,18 @@ class _FAQScreenState extends State<FAQScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal.shade50,
+      backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        backgroundColor: Colors.teal,
-        title: const Text("FAQ"),
+        backgroundColor: Colors.white,
+        title: const Text(
+          "Frequently Asked Questions",
+          style: TextStyle(
+            color: Color(0xFF4B3F72),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF4B3F72)),
+        elevation: 1,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -53,21 +61,49 @@ class _FAQScreenState extends State<FAQScreen> {
         itemBuilder: (context, index) {
           final faq = faqs[index];
           final isOpen = activeIndex == index;
-          return Card(
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 16),
               title: Text(
                 faq["question"]!,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: Colors.black87,
+                ),
               ),
               subtitle: isOpen
                   ? Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(faq["answer"]!),
+                      child: Text(
+                        faq["answer"]!,
+                        style: const TextStyle(
+                          color: Colors.black54,
+                          height: 1.4,
+                        ),
+                      ),
                     )
                   : null,
-              trailing: Icon(isOpen
-                  ? Icons.keyboard_arrow_up
-                  : Icons.keyboard_arrow_down),
+              trailing: Icon(
+                isOpen
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+                color: const Color(0xFF4B3F72),
+              ),
               onTap: () => toggleFAQ(index),
             ),
           );

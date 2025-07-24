@@ -6,85 +6,139 @@ class ContactUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal.shade50,
+      backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        backgroundColor: Colors.teal,
-        title: const Text("Contact Us"),
+        backgroundColor: Colors.white,
+        title: const Text(
+          "Contact Us",
+          style: TextStyle(
+            color: Color(0xFF4B3F72),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF4B3F72)),
+        elevation: 1,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Contact Us",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 16),
             const Text(
-              "If you have questions or need assistance, feel free to reach out to us!",
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              "Phone: 9849-XXXXXX",
-              style: TextStyle(fontSize: 16),
-            ),
-            const Text(
-              "Email: support@petalert.com",
-              style: TextStyle(fontSize: 16),
-            ),
-            const Text(
-              "Address: Kathmandu, Nepal",
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              "Send us a message:",
+              "Get in Touch",
               style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.teal),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: "Name",
-                border: OutlineInputBorder(),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4B3F72),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: "Message",
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 4,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+            const Text(
+              "If you have any questions, feedback, or need support, feel free to contact us. We'd love to hear from you!",
+              style: TextStyle(fontSize: 16, color: Colors.black87, height: 1.5),
+            ),
+            const SizedBox(height: 24),
+            const ContactDetailRow(
+              icon: Icons.phone,
+              text: "Phone: 9849-610810",
+            ),
+            const ContactDetailRow(
+              icon: Icons.email,
+              text: "Email: PetAlert@gmail.com",
+            ),
+            const ContactDetailRow(
+              icon: Icons.location_on,
+              text: "Address: Bhaktapur, Nepal",
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              "Send us a message",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF4B3F72),
               ),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Message sent!")),
-                );
-              },
-              child: const Text("Send"),
+            ),
+            const SizedBox(height: 16),
+            _buildTextField(label: "Name"),
+            const SizedBox(height: 12),
+            _buildTextField(label: "Email"),
+            const SizedBox(height: 12),
+            _buildTextField(label: "Message", maxLines: 4),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Message sent!"),
+                      backgroundColor: Colors.black,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.send),
+                label: const Text("Send"),
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  static Widget _buildTextField({required String label, int maxLines = 1}) {
+    return TextFormField(
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.black87),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.black12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.black12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF4B3F72), width: 2),
+        ),
+      ),
+    );
+  }
+}
+
+class ContactDetailRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const ContactDetailRow({super.key, required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF4B3F72)),
+          const SizedBox(width: 12),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+        ],
       ),
     );
   }

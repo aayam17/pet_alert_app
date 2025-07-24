@@ -12,82 +12,85 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   bool showNotifications = false;
 
   final List<String> notifications = [
-    "New Lost Pet in Lazimpat 🐶",
-    "Memorial Tribute added for Bella 🕊️",
+    "🐶 New Lost Pet in Lazimpat",
+    "🕊️ Memorial Tribute added for Bella",
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 16),
-          child: Text(
-            "PetAlert",
-            style: TextStyle(
-              color: Color(0xFF5A4FCF),
-              fontWeight: FontWeight.bold,
-              fontSize: 22,
-            ),
-          ),
-        ),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none,
-                    color: Color(0xFF5A4FCF), size: 28),
-                onPressed: () =>
-                    setState(() => showNotifications = !showNotifications),
-              ),
-              if (notifications.isNotEmpty)
-                Positioned(
-                  right: 6,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      '${notifications.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ],
+        toolbarHeight: 0,
       ),
       body: SafeArea(
         child: Stack(
           children: [
             SingleChildScrollView(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// HERO SECTION
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          "PetAlert",
+                          style: TextStyle(
+                            color: Color(0xFF4B3F72),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ),
+                      Stack(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.notifications_none,
+                                color: Color(0xFF4B3F72), size: 28),
+                            onPressed: () =>
+                                setState(() => showNotifications = !showNotifications),
+                          ),
+                          if (notifications.isNotEmpty)
+                            Positioned(
+                              right: 6,
+                              top: 8,
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFE74C3C),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  '${notifications.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                   const Text(
                     "A four-legged word: LOVE",
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF5A4FCF),
-                      letterSpacing: 0.5,
+                      color: Color(0xFF4B3F72),
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -95,12 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Providing expert pet care services online.",
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.black54,
+                      color: Color(0xFF555E68),
                     ),
                   ),
                   const SizedBox(height: 20),
 
-                  /// COMMUNITY BOARD BUTTON (FIXED)
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -114,9 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF3C7),
+                        color: Colors.blueGrey[200],
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: const Color(0xFFFFD369)),
+                        border: Border.all(color: Colors.blueGrey.shade300),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
@@ -132,7 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Color(0xFF2D2D2D),
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
-                            letterSpacing: 0.3,
                           ),
                         ),
                       ),
@@ -141,18 +142,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const SizedBox(height: 24),
 
-                  /// SECTION TITLE
                   const Text(
                     "Explore Services",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF5A4FCF),
+                      color: Color(0xFF4B3F72),
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  /// GRID SERVICE CARDS
                   GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
@@ -161,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisSpacing: 16,
                     childAspectRatio: 1,
                     children: [
-                      _buildGridCard(
+                      _buildAnimatedGridCard(
                         icon: Icons.local_hospital_rounded,
                         title: "Vet Appointments",
                         subtitle: "Book & track vet visits",
@@ -171,18 +170,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (_) => const VetAppointmentsScreen()),
                         ),
                       ),
-                      _buildGridCard(
+                      _buildAnimatedGridCard(
                         icon: Icons.vaccines_rounded,
                         title: "Vaccination",
                         subtitle: "Manage vaccinations",
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) =>
-                                  const VaccinationRecordsScreen()),
+                              builder: (_) => const VaccinationRecordsScreen()),
                         ),
                       ),
-                      _buildGridCard(
+                      _buildAnimatedGridCard(
                         icon: Icons.search,
                         title: "Lost & Found",
                         subtitle: "Report or search pets",
@@ -192,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (_) => const LostAndFoundScreen()),
                         ),
                       ),
-                      _buildGridCard(
+                      _buildAnimatedGridCard(
                         icon: Icons.favorite_border,
                         title: "Memorials",
                         subtitle: "Tributes & memories",
@@ -208,7 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            /// NOTIFICATION DROPDOWN
             if (showNotifications)
               Positioned(
                 top: kToolbarHeight + 8,
@@ -228,15 +225,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: notifications
                           .map(
                             (note) => Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.info_outline,
-                                      size: 18, color: Color(0xFF5A4FCF)),
+                                  const Icon(Icons.pets,
+                                      size: 18, color: Color(0xFF4B3F72)),
                                   const SizedBox(width: 8),
-                                  Expanded(child: Text(note)),
+                                  Expanded(
+                                    child: Text(
+                                      note,
+                                      style: const TextStyle(
+                                          color: Color(0xFF1F1F1F)),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -252,8 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Grid Card Widget
-  Widget _buildGridCard({
+  Widget _buildAnimatedGridCard({
     required IconData icon,
     required String title,
     required String subtitle,
@@ -261,9 +262,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeInOut,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.blueGrey[50],
           borderRadius: BorderRadius.circular(18),
           boxShadow: const [
             BoxShadow(
@@ -277,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: const Color(0xFF5A4FCF)),
+            Icon(icon, size: 36, color: Color(0xFF4B3F72)),
             const SizedBox(height: 12),
             Text(
               title,
@@ -291,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: const TextStyle(fontSize: 13, color: Colors.black54),
+              style: const TextStyle(fontSize: 13, color: Color(0xFF555E68)),
               textAlign: TextAlign.center,
             ),
           ],

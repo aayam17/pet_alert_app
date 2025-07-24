@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_alert_app/features/vaccination%20records/domain/entity/vaccination_record_entity.dart';
 import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_cubit.dart';
 import 'package:pet_alert_app/features/vaccination%20records/presentation/view_model/vaccination_state.dart';
@@ -68,29 +69,54 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = GoogleFonts.poppinsTextTheme(
+      Theme.of(context).textTheme.apply(
+        bodyColor: Colors.black,
+        displayColor: Colors.black,
+      ),
+    );
+
     return Scaffold(
-      backgroundColor: const Color(0xFFE3FDFD),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.teal,
-        title: const Text("Vaccination Records"),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: Text("Vaccination Records",
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             /// Form Section
-            Card(
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    /// Date Picker
-                    Row(
-                      children: [
-                        const Text("Date:"),
-                        const SizedBox(width: 16),
-                        TextButton(
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.blueGrey[100], // updated form background
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.black12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  /// Date Picker
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        child: Text("Date:", style: textTheme.bodyLarge),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextButton(
                           onPressed: () async {
                             final date = await showDatePicker(
                               context: context,
@@ -108,31 +134,53 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                             selectedDate == null
                                 ? 'Select date'
                                 : DateFormat('yyyy-MM-dd').format(selectedDate!),
+                            style: textTheme.bodyLarge?.copyWith(color: Colors.black),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
 
-                    /// Vaccine Name
-                    TextFormField(
-                      controller: vaccineController,
-                      decoration: const InputDecoration(labelText: "Vaccine Name"),
+                  /// Vaccine Name
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: vaccineController,
+                    decoration: InputDecoration(
+                      labelText: "Vaccine Name",
+                      labelStyle: textTheme.bodyMedium,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                  ),
 
-                    /// Notes
-                    TextFormField(
-                      controller: notesController,
-                      decoration: const InputDecoration(labelText: "Notes"),
-                      maxLines: 3,
+                  /// Notes
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: notesController,
+                    decoration: InputDecoration(
+                      labelText: "Notes",
+                      labelStyle: textTheme.bodyMedium,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                    maxLines: 3,
+                  ),
 
-                    const SizedBox(height: 16),
-                    ElevatedButton(
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
                       onPressed: handleSubmit,
-                      child: Text(editingId != null ? 'Update Record' : 'Add Record'),
+                      child: Text(
+                        editingId != null ? 'Update Record' : 'Add Record',
+                        style: textTheme.labelLarge?.copyWith(color: Colors.white),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
@@ -145,24 +193,51 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                   return const CircularProgressIndicator();
                 } else if (state is VaccinationLoaded) {
                   return state.records.isEmpty
-                      ? const Text("No vaccination records added.")
+                      ? Text("No vaccination records added.", style: textTheme.bodyMedium)
                       : Column(
                           children: state.records.map((record) {
-                            return Card(
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.blueGrey[50], // updated card background
+                                border: Border.all(color: Colors.black12),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12.withOpacity(0.05),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
                               child: ListTile(
-                                title: Text('${record.date} - ${record.vaccine}'),
+                                contentPadding: EdgeInsets.zero,
+                                leading: const CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: Colors.black,
+                                  child: Icon(Icons.vaccines, color: Colors.white, size: 20),
+                                ),
+                                title: Text('${record.date} • ${record.vaccine}',
+                                    style: textTheme.titleMedium),
                                 subtitle: record.notes.isNotEmpty
-                                    ? Text('Notes: ${record.notes}')
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(top: 4),
+                                        child: Text('Notes: ${record.notes}',
+                                            style: textTheme.bodyMedium),
+                                      )
                                     : null,
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                trailing: Wrap(
+                                  spacing: 8,
                                   children: [
                                     IconButton(
-                                      icon: const Icon(Icons.edit, color: Colors.blue),
+                                      icon: const Icon(Icons.edit_note_outlined, color: Colors.teal),
+                                      tooltip: 'Edit Record',
                                       onPressed: () => handleEdit(record),
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
+                                      tooltip: 'Delete Record',
                                       onPressed: () {
                                         context.read<VaccinationCubit>().deleteRecord(record.id);
                                       },
@@ -174,7 +249,8 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                           }).toList(),
                         );
                 } else if (state is VaccinationError) {
-                  return Text(state.message, style: const TextStyle(color: Colors.red));
+                  return Text(state.message,
+                      style: textTheme.bodyMedium?.copyWith(color: Colors.red));
                 }
                 return const SizedBox();
               },

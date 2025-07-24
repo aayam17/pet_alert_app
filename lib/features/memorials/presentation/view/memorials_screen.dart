@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_alert_app/features/memorials/domain/entity/memorial_entity.dart';
 import 'package:pet_alert_app/features/memorials/presentation/view_model/memorial_cubit.dart';
 import 'package:pet_alert_app/features/memorials/presentation/view_model/memorial_state.dart';
@@ -92,11 +93,21 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = GoogleFonts.poppinsTextTheme(
+      Theme.of(context).textTheme.apply(
+            bodyColor: Colors.black,
+            displayColor: Colors.black,
+          ),
+    );
+
     return Scaffold(
-      backgroundColor: Colors.pink.shade50,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Memorial Tribute Board"),
-        backgroundColor: Colors.pink,
+        title: Text("Memorial Tribute Board", style: textTheme.titleLarge),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: BlocBuilder<MemorialCubit, MemorialState>(
         builder: (context, state) {
@@ -107,17 +118,17 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  /// Form Section
-                  buildForm(),
+                  buildForm(textTheme),
                   const SizedBox(height: 24),
-
-                  /// List Section
-                  ...state.memorials.map(buildCard).toList(),
+                  ...state.memorials.map((m) => buildCard(m, textTheme)).toList(),
                 ],
               ),
             );
           } else if (state is MemorialError) {
-            return Center(child: Text(state.message, style: const TextStyle(color: Colors.red)));
+            return Center(
+              child: Text(state.message,
+                  style: textTheme.bodyMedium?.copyWith(color: Colors.red)),
+            );
           } else {
             return const Center(child: Text("Unexpected state"));
           }
@@ -126,30 +137,42 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
     );
   }
 
-  Widget buildForm() {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: "Pet's Name"),
-                validator: (v) => v!.isEmpty ? "Required" : null,
-              ),
-              TextFormField(
-                controller: messageController,
-                decoration: const InputDecoration(labelText: "Message (optional)"),
-                maxLines: 3,
-              ),
-              Row(
-                children: [
-                  const Text("Date of Passing:"),
-                  const SizedBox(width: 16),
-                  TextButton(
+  Widget buildForm(TextTheme textTheme) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[100],
+        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: "Pet's Name"),
+              validator: (v) => v!.isEmpty ? "Required" : null,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: messageController,
+              decoration: const InputDecoration(labelText: "Message (optional)"),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                SizedBox(width: 120, child: Text("Date of Passing:", style: textTheme.bodyLarge)),
+                Expanded(
+                  child: TextButton(
                     onPressed: () async {
                       final date = await showDatePicker(
                         context: context,
@@ -163,42 +186,66 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
                       dateOfPassing == null
                           ? "Select Date"
                           : DateFormat("yyyy-MM-dd").format(dateOfPassing!),
+                      style: textTheme.bodyLarge?.copyWith(color: Colors.black),
                     ),
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.image),
-                    label: const Text("Pick Photo"),
-                    onPressed: pickImage,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.pink),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.image, color: Colors.white),
+                  label: const Text("Pick Photo", style: TextStyle(color: Colors.white)),
+                  onPressed: pickImage,
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                ),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    imageUrl != null ? "Photo uploaded" : "No image uploaded",
+                    style: TextStyle(
+                      color: imageUrl != null ? Colors.green : Colors.redAccent,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  imageUrl != null
-                      ? const Text("Photo uploaded ✅", style: TextStyle(color: Colors.green))
-                      : const Text("No image uploaded", style: TextStyle(color: Colors.grey)),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
                 onPressed: handleSubmit,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.pink),
-                child: Text(editingId == null ? "Add Memorial" : "Update Memorial"),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                child: Text(
+                  editingId == null ? "Add Memorial" : "Update Memorial",
+                  style: textTheme.labelLarge?.copyWith(color: Colors.white),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget buildCard(MemorialEntity m) {
-    return Card(
-      color: Colors.white,
-      elevation: 3,
+  Widget buildCard(MemorialEntity m, TextTheme textTheme) {
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[50],
+        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12.withOpacity(0.05),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -216,30 +263,32 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
             const SizedBox(height: 8),
             Text(
               m.petName,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.pink),
+              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             if (m.message.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   '"${m.message}"',
-                  style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black87),
+                  style: textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
                 ),
               ),
-            Text("Passed on: ${m.dateOfPassing}", style: const TextStyle(color: Colors.grey)),
+            Text("Passed on: ${m.dateOfPassing}", style: textTheme.bodySmall),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
+                  icon: const Icon(Icons.edit_note_outlined, color: Colors.teal),
+                  tooltip: "Edit Memorial",
                   onPressed: () => handleEdit(m),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
+                  tooltip: "Delete Memorial",
                   onPressed: () => context.read<MemorialCubit>().deleteMemorial(m.id),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
