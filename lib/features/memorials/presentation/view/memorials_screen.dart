@@ -120,7 +120,7 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
                 children: [
                   buildForm(textTheme),
                   const SizedBox(height: 24),
-                  ...state.memorials.map((m) => buildCard(m, textTheme)).toList(),
+                  ...state.memorials.map((m) => buildCard(m, textTheme)),
                 ],
               ),
             );

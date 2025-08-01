@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_alert_app/app/service_locator/service_locator.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/signup_page.dart';
@@ -64,9 +63,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 40),
                     TextFormField(
                       controller: _emailController,
-                      validator: (val) => val == null || val.isEmpty
-                          ? 'Enter your email'
-                          : null,
+                      validator: (val) =>
+                          val == null || val.isEmpty ? 'Enter your email' : null,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         prefixIcon: const Icon(Icons.email),
@@ -116,8 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                                   },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black87,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: borderRadius,
                               ),
@@ -135,34 +132,6 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
                       },
-                    ),
-                    const SizedBox(height: 40),
-                    Center(
-                      child: Text(
-                        "Or log in with",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildSocialButton(
-                          icon: FontAwesomeIcons.google,
-                          color: Colors.red,
-                          background: Colors.white,
-                          border: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        const SizedBox(width: 20),
-                        _buildSocialButton(
-                          icon: FontAwesomeIcons.apple,
-                          color: Colors.white,
-                          background: Colors.black,
-                        ),
-                      ],
                     ),
                     const SizedBox(height: 30),
                     Row(
@@ -195,25 +164,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required IconData icon,
-    required Color color,
-    required Color background,
-    BorderSide? border,
-  }) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: background,
-        padding: const EdgeInsets.all(16),
-        shape: const CircleBorder(),
-        side: border,
-        elevation: 2,
-      ),
-      child: FaIcon(icon, color: color),
     );
   }
 }

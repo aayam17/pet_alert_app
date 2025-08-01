@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_alert_app/features/community board/presentation/view_model/community_board_cubit.dart';
 import 'package:pet_alert_app/features/community board/presentation/view_model/community_board_state.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 class CommunityBoardScreen extends StatefulWidget {
   const CommunityBoardScreen({super.key});
@@ -116,7 +115,7 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
                 ...filteredLost.map((e) => AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: _buildLostCard(e, isDark, textTheme),
-                )).toList(),
+                )),
                 const SizedBox(height: 30),
 
                 /// Memorials
@@ -125,7 +124,7 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
                 ...filteredMemorials.map((m) => AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: _buildMemorialCard(m, isDark, textTheme),
-                )).toList(),
+                )),
               ],
             );
           } else if (state is CommunityBoardError) {
@@ -157,12 +156,22 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// ✅ Fix: No overflow
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(lost.description, style: textTheme.titleMedium),
+              Expanded(
+                child: Text(
+                  lost.description,
+                  style: textTheme.titleMedium,
+                  softWrap: true,
+                ),
+              ),
               if (isNewEntry(lost.date))
-                const Text("🆕", style: TextStyle(color: Colors.orange)),
+                const Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Text("🆕", style: TextStyle(color: Colors.orange)),
+                ),
             ],
           ),
           const SizedBox(height: 6),

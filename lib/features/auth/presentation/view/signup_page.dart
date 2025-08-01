@@ -1,14 +1,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_alert_app/app/service_locator/service_locator.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_bloc.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_event.dart';
 import 'package:pet_alert_app/features/auth/presentation/view_model/signup/signup_state.dart';
-import 'terms_page.dart';
+import 'widgets/terms_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -201,29 +200,6 @@ class _SignupPageState extends State<SignupPage> {
                         );
                       },
                     ),
-                    const SizedBox(height: 30),
-                    Text(
-                      "Or sign up with",
-                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildSocialButton(
-                          icon: FontAwesomeIcons.google,
-                          color: Colors.red,
-                          background: Colors.white,
-                          border: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        const SizedBox(width: 20),
-                        _buildSocialButton(
-                          icon: FontAwesomeIcons.apple,
-                          color: Colors.white,
-                          background: Colors.black,
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -231,25 +207,6 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required IconData icon,
-    required Color color,
-    required Color background,
-    BorderSide? border,
-  }) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: background,
-        padding: const EdgeInsets.all(16),
-        shape: const CircleBorder(),
-        side: border,
-        elevation: 2,
-      ),
-      child: FaIcon(icon, color: color),
     );
   }
 }

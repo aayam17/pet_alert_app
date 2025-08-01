@@ -1,4 +1,7 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:light/light.dart';
 import 'package:pet_alert_app/features/community%20board/presentation/view/community_board_screen.dart';
 import '../../../vet appointments/presentation/view/vet_appointments_screen.dart';
 import '../../../vaccination records/presentation/view/vaccination_records_screen.dart';
@@ -15,11 +18,79 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   bool showNotifications = false;
-
   final List<String> notifications = [
     "🐶 New Lost Pet in Lazimpat",
     "🕊️ Memorial Tribute added for Bella",
   ];
+
+  static const double shakeThreshold = 15.0;
+  DateTime lastShakeTime = DateTime.now();
+
+  Light? _lightSensor;
+  Stream<int>? _lightStream;
+  int _lastLuxLevel = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _startShakeListener();
+    _startLightSensor();
+  }
+
+  void _startShakeListener() {
+    accelerometerEvents.listen((event) {
+      final double acceleration = sqrt(
+        event.x * event.x + event.y * event.y + event.z * event.z,
+      );
+
+      final now = DateTime.now();
+      final timeDiff = now.difference(lastShakeTime);
+
+      if (acceleration > shakeThreshold && timeDiff.inMilliseconds > 1000) {
+        lastShakeTime = now;
+        _navigateToCommunityBoard();
+      }
+    });
+  }
+
+  void _navigateToCommunityBoard() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CommunityBoardScreen()),
+    );
+  }
+
+  void _startLightSensor() {
+    _lightSensor = Light();
+    _lightStream = _lightSensor!.lightSensorStream;
+
+    _lightStream!.listen((lux) {
+      if (_lastLuxLevel == -1 ||
+          (lux < 10 && _lastLuxLevel >= 10) ||
+          (lux > 100 && _lastLuxLevel <= 100)) {
+        _lastLuxLevel = lux;
+
+        if (lux < 10) {
+          _showSnackBar("🌙 Low light detected!");
+        } else if (lux > 100) {
+          _showSnackBar("☀️ Bright environment detected!");
+        }
+      }
+    }, onError: (err) {
+      debugPrint("Light sensor error: $err");
+    });
+  }
+
+  void _showSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +173,6 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -139,9 +209,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
                   const Text(
                     "Explore Services",
                     style: TextStyle(
@@ -151,7 +219,6 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
@@ -205,7 +272,6 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               ),
             ),
-
             if (showNotifications)
               Positioned(
                 top: kToolbarHeight + 8,
@@ -280,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 36, color: Color(0xFF4B3F72)),
+            Icon(icon, size: 36, color: const Color(0xFF4B3F72)),
             const SizedBox(height: 12),
             Text(
               title,
