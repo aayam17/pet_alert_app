@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart'; // for kReleaseMode
 import 'package:http/http.dart' as http;
 import '../../model/user_model.dart';
 
@@ -9,10 +11,26 @@ abstract class AuthRemoteDataSource {
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final http.Client client;
+  late final String _baseUrl;
 
-  AuthRemoteDataSourceImpl(this.client);
-
-  final String _baseUrl = 'http://127.0.0.1:3000/api/auth';
+  AuthRemoteDataSourceImpl(this.client) {
+    if (kReleaseMode) {
+      // ✅ RELEASE: Use real API endpoint when live
+      _baseUrl = 'https://api.petalert.com/api/auth'; // Replace with your prod URL
+    } else {
+      // ✅ DEBUG: Local development
+      if (Platform.isAndroid) {
+        // Android emulator connects to host via 10.0.2.2
+        _baseUrl = 'http://10.0.2.2:3000/api/auth';
+      } else if (Platform.isIOS) {
+        // iOS (simulator & real device) use your Mac’s IP
+        _baseUrl = 'http://192.168.1.90:3000/api/auth'; // Replace with your actual Mac IP
+      } else {
+        // Other platforms fallback
+        _baseUrl = 'http://localhost:3000/api/auth';
+      }
+    }
+  }
 
   @override
   Future<AuthApiModel> login(String email, String password) async {

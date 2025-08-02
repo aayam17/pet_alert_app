@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,15 +10,30 @@ import 'memorial_remote_datasource.dart';
 
 class MemorialRemoteDataSourceImpl implements MemorialRemoteDataSource {
   final http.Client client;
-  final String baseUrl = 'http://127.0.0.1:3000/api/memorials';
-  final String uploadUrl = 'http://127.0.0.1:3000/api/upload';
+  late final String baseUrl;
+  late final String uploadUrl;
 
-  MemorialRemoteDataSourceImpl(this.client);
+  MemorialRemoteDataSourceImpl(this.client) {
+    if (kReleaseMode) {
+      baseUrl = 'https://api.petalert.com/api/memorials';
+      uploadUrl = 'https://api.petalert.com/api/upload';
+    } else {
+      if (Platform.isAndroid) {
+        baseUrl = 'http://10.0.2.2:3000/api/memorials';
+        uploadUrl = 'http://10.0.2.2:3000/api/upload';
+      } else if (Platform.isIOS) {
+        baseUrl = 'http://192.168.1.90:3000/api/memorials';
+        uploadUrl = 'http://192.168.1.90:3000/api/upload';
+      } else {
+        baseUrl = 'http://localhost:3000/api/memorials';
+        uploadUrl = 'http://localhost:3000/api/upload';
+      }
+    }
+  }
 
   Future<Map<String, String>> _headersWithToken() async {
     final userBox = Hive.box<AuthApiModel>('users');
-    final user = userBox.values.firstOrNull;
-    final token = user?.token;
+    final token = userBox.values.firstOrNull?.token;
 
     if (token == null || token.isEmpty) throw Exception("JWT token missing");
 
@@ -32,7 +49,7 @@ class MemorialRemoteDataSourceImpl implements MemorialRemoteDataSource {
     final response = await client.get(Uri.parse(baseUrl), headers: headers);
 
     if (response.statusCode != 200) {
-      throw Exception("Failed to load memorials");
+      throw Exception("Failed to load memorials: ${response.body}");
     }
 
     final List data = json.decode(response.body);
@@ -49,7 +66,7 @@ class MemorialRemoteDataSourceImpl implements MemorialRemoteDataSource {
     );
 
     if (response.statusCode != 201) {
-      throw Exception("Failed to add memorial");
+      throw Exception("Failed to add memorial: ${response.body}");
     }
   }
 
@@ -63,7 +80,7 @@ class MemorialRemoteDataSourceImpl implements MemorialRemoteDataSource {
     );
 
     if (response.statusCode != 200) {
-      throw Exception("Failed to update memorial");
+      throw Exception("Failed to update memorial: ${response.body}");
     }
   }
 
@@ -76,15 +93,14 @@ class MemorialRemoteDataSourceImpl implements MemorialRemoteDataSource {
     );
 
     if (response.statusCode != 200) {
-      throw Exception("Failed to delete memorial");
+      throw Exception("Failed to delete memorial: ${response.body}");
     }
   }
 
   @override
   Future<String> uploadImage(String filePath) async {
     final userBox = Hive.box<AuthApiModel>('users');
-    final user = userBox.values.firstOrNull;
-    final token = user?.token;
+    final token = userBox.values.firstOrNull?.token;
 
     if (token == null || token.isEmpty) throw Exception("JWT token missing");
 
@@ -97,7 +113,7 @@ class MemorialRemoteDataSourceImpl implements MemorialRemoteDataSource {
     final response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode != 200) {
-      throw Exception("Image upload failed");
+      throw Exception("Image upload failed: ${response.body}");
     }
 
     final body = json.decode(response.body);

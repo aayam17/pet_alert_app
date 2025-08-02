@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../../dto/vet_appointment_dto.dart';
 import 'vet_appointment_remote_datasource.dart';
@@ -7,9 +9,21 @@ import 'package:pet_alert_app/features/auth/data/model/user_model.dart';
 
 class VetAppointmentRemoteDataSourceImpl implements VetAppointmentRemoteDataSource {
   final http.Client client;
-  final String baseUrl = 'http://127.0.0.1:3000/api/vetappointments';
+  late final String baseUrl;
 
-  VetAppointmentRemoteDataSourceImpl(this.client);
+  VetAppointmentRemoteDataSourceImpl(this.client) {
+    if (kReleaseMode) {
+      baseUrl = 'https://api.petalert.com/api/vetappointments'; // Future prod URL
+    } else {
+      if (Platform.isAndroid) {
+        baseUrl = 'http://10.0.2.2:3000/api/vetappointments';
+      } else if (Platform.isIOS) {
+        baseUrl = 'http://192.168.1.90:3000/api/vetappointments'; // ← your Mac IP here
+      } else {
+        baseUrl = 'http://localhost:3000/api/vetappointments';
+      }
+    }
+  }
 
   Future<Map<String, String>> _headersWithToken() async {
     final box = Hive.box<AuthApiModel>('users');
@@ -23,8 +37,11 @@ class VetAppointmentRemoteDataSourceImpl implements VetAppointmentRemoteDataSour
 
   @override
   Future<List<VetAppointmentDto>> fetchAppointments() async {
-    final response = await client.get(Uri.parse(baseUrl));
-    if (response.statusCode != 200) throw Exception('Failed to fetch');
+    final headers = await _headersWithToken();
+    final response = await client.get(Uri.parse(baseUrl), headers: headers);
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch appointments: ${response.body}');
+    }
 
     final List data = json.decode(response.body);
     return data.map((e) => VetAppointmentDto.fromJson(e)).toList();
@@ -38,7 +55,9 @@ class VetAppointmentRemoteDataSourceImpl implements VetAppointmentRemoteDataSour
       headers: headers,
       body: json.encode(dto.toJson()),
     );
-    if (response.statusCode != 201) throw Exception('Failed to add appointment');
+    if (response.statusCode != 201) {
+      throw Exception('Failed to add appointment: ${response.body}');
+    }
   }
 
   @override
@@ -49,13 +68,17 @@ class VetAppointmentRemoteDataSourceImpl implements VetAppointmentRemoteDataSour
       headers: headers,
       body: json.encode(dto.toJson()),
     );
-    if (response.statusCode != 200) throw Exception('Failed to update');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update appointment: ${response.body}');
+    }
   }
 
   @override
   Future<void> deleteAppointment(String id) async {
     final headers = await _headersWithToken();
     final response = await client.delete(Uri.parse('$baseUrl/$id'), headers: headers);
-    if (response.statusCode != 200) throw Exception('Failed to delete');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete appointment: ${response.body}');
+    }
   }
 }

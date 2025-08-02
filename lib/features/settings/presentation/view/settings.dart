@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'widgets/about_us_screen.dart';
 import 'widgets/contact_us_screen.dart';
 import 'widgets/faq_screen.dart';
-import 'package:flutter/scheduler.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,21 +13,25 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStateMixin {
-  bool notificationsEnabled = true;
-  bool darkModeEnabled = SchedulerBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
-
+  late bool darkModeEnabled;
   late final AnimationController _iconController;
 
   @override
   void initState() {
     super.initState();
+    // Detect system brightness initially
+    darkModeEnabled = SchedulerBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+
     _iconController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
       lowerBound: 0.0,
       upperBound: 1.0,
     );
-    if (darkModeEnabled) _iconController.forward();
+
+    if (darkModeEnabled) {
+      _iconController.value = 1.0;
+    }
   }
 
   @override
@@ -70,25 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
         body: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            /// Notifications toggle
-            SwitchListTile(
-              title: const Text("Enable Notifications"),
-              value: notificationsEnabled,
-              activeColor: Colors.black,
-              secondary: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: Icon(
-                  notificationsEnabled ? Icons.notifications_active : Icons.notifications_off,
-                  key: ValueKey(notificationsEnabled),
-                  color: Colors.black,
-                ),
-              ),
-              onChanged: (val) {
-                setState(() => notificationsEnabled = val);
-              },
-            ),
-
-            /// Dark Mode toggle
+            /// Dark Mode toggle only
             SwitchListTile(
               title: const Text("Enable Dark Mode"),
               value: darkModeEnabled,

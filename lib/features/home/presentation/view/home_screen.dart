@@ -357,10 +357,13 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               subtitle,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF555E68)),
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF555E68),
+              ),
               textAlign: TextAlign.center,
             ),
           ],
