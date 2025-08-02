@@ -11,15 +11,27 @@ class CommunityBoardScreen extends StatefulWidget {
   State<CommunityBoardScreen> createState() => _CommunityBoardScreenState();
 }
 
-class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
+class _CommunityBoardScreenState extends State<CommunityBoardScreen>
+    with SingleTickerProviderStateMixin {
   String filter = 'All';
   String sortOrder = 'Newest';
   String searchQuery = '';
+  late AnimationController _gradientController;
 
   @override
   void initState() {
     super.initState();
     context.read<CommunityBoardCubit>().loadBoard();
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _gradientController.dispose();
+    super.dispose();
   }
 
   bool isNewEntry(String date) {
@@ -41,10 +53,30 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
     return Scaffold(
       backgroundColor: isDark ? Colors.grey[900] : const Color(0xFFF6F7FB),
       appBar: AppBar(
-        title: Text("Community Board", style: textTheme.titleLarge?.copyWith(color: const Color(0xFF5A4FCF))),
+        elevation: 0.5,
         backgroundColor: Colors.white,
-        elevation: 1,
         iconTheme: const IconThemeData(color: Color(0xFF5A4FCF)),
+        title: AnimatedBuilder(
+          animation: _gradientController,
+          builder: (context, child) {
+            return ShaderMask(
+              shaderCallback: (bounds) {
+                return LinearGradient(
+                  colors: const [Colors.deepPurple, Colors.blueAccent],
+                  begin: Alignment(-1 + 2 * _gradientController.value, -1),
+                  end: Alignment(1 - 2 * _gradientController.value, 1),
+                ).createShader(bounds);
+              },
+              child: Text(
+                "Community Board",
+                style: textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          },
+        ),
       ),
       body: BlocBuilder<CommunityBoardCubit, CommunityBoardState>(
         builder: (context, state) {
@@ -72,7 +104,7 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                /// Filters & Search
+                /// 🔍 Filters & Search
                 Row(
                   children: [
                     DropdownButton<String>(
@@ -97,34 +129,72 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
                         decoration: InputDecoration(
                           hintText: 'Search...',
                           prefixIcon: const Icon(Icons.search),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 4),
                           isDense: true,
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                     )
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-                /// Lost & Found
-                Text("🐾 Lost & Found (${filteredLost.length})", style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                /// 🐾 Lost & Found Section
+                AnimatedBuilder(
+                  animation: _gradientController,
+                  builder: (_, __) => ShaderMask(
+                    shaderCallback: (bounds) {
+                      return LinearGradient(
+                        colors: const [Colors.purple, Colors.teal],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds);
+                    },
+                    child: Text(
+                      "🐾 Lost & Found (${filteredLost.length})",
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 10),
                 ...filteredLost.map((e) => AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: _buildLostCard(e, isDark, textTheme),
-                )),
+                      duration: const Duration(milliseconds: 300),
+                      child: _buildLostCard(e, isDark, textTheme),
+                    )),
                 const SizedBox(height: 30),
 
-                /// Memorials
-                Text("🕊️ Memorial Tributes (${filteredMemorials.length})", style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                /// 🕊️ Memorial Section
+                AnimatedBuilder(
+                  animation: _gradientController,
+                  builder: (_, __) => ShaderMask(
+                    shaderCallback: (bounds) {
+                      return LinearGradient(
+                        colors: const [Colors.pink, Colors.cyan],
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                      ).createShader(bounds);
+                    },
+                    child: Text(
+                      "🕊️ Memorial Tributes (${filteredMemorials.length})",
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 10),
                 ...filteredMemorials.map((m) => AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: _buildMemorialCard(m, isDark, textTheme),
-                )),
+                      duration: const Duration(milliseconds: 300),
+                      child: _buildMemorialCard(m, isDark, textTheme),
+                    )),
               ],
             );
           } else if (state is CommunityBoardError) {
@@ -141,14 +211,14 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[800] : Colors.blueGrey[50],
+        color: isDark ? Colors.grey[850] : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.black12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black12.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           )
         ],
       ),
@@ -156,7 +226,7 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// ✅ Fix: No overflow
+          /// Description + "🆕"
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -164,13 +234,18 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
                 child: Text(
                   lost.description,
                   style: textTheme.titleMedium,
-                  softWrap: true,
                 ),
               ),
               if (isNewEntry(lost.date))
-                const Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Text("🆕", style: TextStyle(color: Colors.orange)),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Colors.orangeAccent, Colors.yellow],
+                    ).createShader(bounds),
+                    child: const Text("🆕",
+                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                  ),
                 ),
             ],
           ),
@@ -204,9 +279,9 @@ class _CommunityBoardScreenState extends State<CommunityBoardScreen> {
         border: Border.all(color: Colors.black12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black12.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           )
         ],
       ),

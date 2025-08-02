@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FAQScreen extends StatefulWidget {
   const FAQScreen({super.key});
@@ -13,53 +14,58 @@ class _FAQScreenState extends State<FAQScreen> {
   final List<Map<String, String>> faqs = [
     {
       "question": "How do I create a pet profile?",
-      "answer":
-          "To create a pet profile, navigate to the 'Pet Profiles' section and click the 'Add New Pet' button. Fill in the details and save.",
+      "answer": "Navigate to 'Pet Profiles' and click 'Add New Pet'."
     },
     {
-      "question": "Can I track my pet's vaccination records?",
-      "answer":
-          "Yes! You can add, edit, and view vaccination records under each pet's profile to stay up-to-date.",
+      "question": "Can I track vaccination records?",
+      "answer": "Yes! Go to each pet profile and update their records."
     },
     {
-      "question": "How do I book a vet appointment?",
-      "answer":
-          "Visit the 'Vet Appointments' page, select your preferred vet and time slot, and confirm your booking.",
+      "question": "How to book a vet appointment?",
+      "answer": "Open 'Vet Appointments', choose your vet and time slot."
     },
     {
       "question": "What if I lose my pet?",
-      "answer":
-          "Use the 'Lost & Found Board' to report lost pets or check if someone has found a pet matching your description.",
+      "answer": "Use the 'Lost & Found Board' to report or find pets."
     },
   ];
 
   void toggleFAQ(int index) {
-    setState(() {
-      activeIndex = activeIndex == index ? null : index;
-    });
+    setState(() => activeIndex = activeIndex == index ? null : index);
   }
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = GoogleFonts.poppinsTextTheme(
+      Theme.of(context).textTheme.apply(bodyColor: Colors.black),
+    );
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text(
-          "Frequently Asked Questions",
-          style: TextStyle(
-            color: Color(0xFF4B3F72),
-            fontWeight: FontWeight.bold,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds),
+          child: Text(
+            "FAQs",
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
-        iconTheme: const IconThemeData(color: Color(0xFF4B3F72)),
-        elevation: 1,
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: faqs.length,
         itemBuilder: (context, index) {
-          final faq = faqs[index];
           final isOpen = activeIndex == index;
           return AnimatedContainer(
             duration: const Duration(milliseconds: 300),
@@ -67,41 +73,25 @@ class _FAQScreenState extends State<FAQScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               title: Text(
-                faq["question"]!,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
+                faqs[index]["question"]!,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
               ),
               subtitle: isOpen
                   ? Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        faq["answer"]!,
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          height: 1.4,
-                        ),
+                        faqs[index]["answer"]!,
+                        style: const TextStyle(color: Colors.black54, height: 1.4),
                       ),
                     )
                   : null,
               trailing: Icon(
-                isOpen
-                    ? Icons.keyboard_arrow_up
-                    : Icons.keyboard_arrow_down,
+                isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                 color: const Color(0xFF4B3F72),
               ),
               onTap: () => toggleFAQ(index),

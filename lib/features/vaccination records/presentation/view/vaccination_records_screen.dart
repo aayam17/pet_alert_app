@@ -13,16 +13,29 @@ class VaccinationRecordsScreen extends StatefulWidget {
   State<VaccinationRecordsScreen> createState() => _VaccinationRecordsScreenState();
 }
 
-class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
+class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen>
+    with SingleTickerProviderStateMixin {
   DateTime? selectedDate;
   TextEditingController vaccineController = TextEditingController();
   TextEditingController notesController = TextEditingController();
   String? editingId;
 
+  late AnimationController _gradientController;
+
   @override
   void initState() {
     super.initState();
     context.read<VaccinationCubit>().loadRecords();
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _gradientController.dispose();
+    super.dispose();
   }
 
   void resetForm() {
@@ -77,37 +90,53 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: Text("Vaccination Records",
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
         iconTheme: const IconThemeData(color: Colors.black),
+        title: AnimatedBuilder(
+          animation: _gradientController,
+          builder: (context, _) => ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: const [Colors.deepPurple, Colors.cyan],
+              begin: Alignment(-1 + 2 * _gradientController.value, -1),
+              end: Alignment(1 - 2 * _gradientController.value, 1),
+            ).createShader(bounds),
+            child: Text(
+              "Vaccination Records",
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// Form Section
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.blueGrey[100], // updated form background
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD1C4E9), Color(0xFFB2EBF2)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.black12),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
-                    color: Colors.black12.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
               child: Column(
                 children: [
-                  /// Date Picker
                   Row(
                     children: [
                       SizedBox(
@@ -140,8 +169,6 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                       ),
                     ],
                   ),
-
-                  /// Vaccine Name
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: vaccineController,
@@ -149,10 +176,10 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                       labelText: "Vaccine Name",
                       labelStyle: textTheme.bodyMedium,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      fillColor: Colors.white,
+                      filled: true,
                     ),
                   ),
-
-                  /// Notes
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: notesController,
@@ -160,20 +187,26 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                       labelText: "Notes",
                       labelStyle: textTheme.bodyMedium,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      fillColor: Colors.white,
+                      filled: true,
                     ),
                     maxLines: 3,
                   ),
-
                   const SizedBox(height: 16),
-                  SizedBox(
+                  Container(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
                       ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: TextButton(
                       onPressed: handleSubmit,
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
                       child: Text(
                         editingId != null ? 'Update Record' : 'Add Record',
                         style: textTheme.labelLarge?.copyWith(color: Colors.white),
@@ -183,10 +216,7 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
-
-            /// List Section
             BlocBuilder<VaccinationCubit, VaccinationState>(
               builder: (context, state) {
                 if (state is VaccinationLoading) {
@@ -197,17 +227,17 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                       : Column(
                           children: state.records.map((record) {
                             return Container(
-                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              margin: const EdgeInsets.symmetric(vertical: 10),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: Colors.blueGrey[50], // updated card background
+                                color: Colors.white,
                                 border: Border.all(color: Colors.black12),
                                 borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
+                                boxShadow: const [
                                   BoxShadow(
-                                    color: Colors.black12.withOpacity(0.05),
+                                    color: Colors.black12,
                                     blurRadius: 8,
-                                    offset: const Offset(0, 2),
+                                    offset: Offset(0, 4),
                                   ),
                                 ],
                               ),
@@ -215,11 +245,11 @@ class _VaccinationRecordsScreenState extends State<VaccinationRecordsScreen> {
                                 contentPadding: EdgeInsets.zero,
                                 leading: const CircleAvatar(
                                   radius: 24,
-                                  backgroundColor: Colors.black,
+                                  backgroundColor: Colors.deepPurple,
                                   child: Icon(Icons.vaccines, color: Colors.white, size: 20),
                                 ),
                                 title: Text('${record.date} • ${record.vaccine}',
-                                    style: textTheme.titleMedium),
+                                    style: textTheme.titleMedium?.copyWith(color: Colors.black)),
                                 subtitle: record.notes.isNotEmpty
                                     ? Padding(
                                         padding: const EdgeInsets.only(top: 4),

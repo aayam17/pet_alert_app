@@ -15,7 +15,8 @@ class MemorialsScreen extends StatefulWidget {
   State<MemorialsScreen> createState() => _MemorialsScreenState();
 }
 
-class _MemorialsScreenState extends State<MemorialsScreen> {
+class _MemorialsScreenState extends State<MemorialsScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
 
@@ -26,10 +27,22 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
   String? imageUrl;
   String? editingId;
 
+  late AnimationController _gradientController;
+
   @override
   void initState() {
     super.initState();
     context.read<MemorialCubit>().loadMemorials();
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _gradientController.dispose();
+    super.dispose();
   }
 
   void resetForm() {
@@ -103,11 +116,27 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Memorial Tribute Board", style: textTheme.titleLarge),
-        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        title: AnimatedBuilder(
+          animation: _gradientController,
+          builder: (context, _) => ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: const [Colors.deepPurple, Colors.cyan],
+              begin: Alignment(-1 + 2 * _gradientController.value, -1),
+              end: Alignment(1 - 2 * _gradientController.value, 1),
+            ).createShader(bounds),
+            child: Text(
+              "Memorial Tribute Board",
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
       body: BlocBuilder<MemorialCubit, MemorialState>(
         builder: (context, state) {
@@ -141,14 +170,17 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.blueGrey[100],
-        border: Border.all(color: Colors.black12),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFD1C4E9), Color(0xFFB2EBF2)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -214,11 +246,20 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            SizedBox(
+            Container(
               width: double.infinity,
-              child: ElevatedButton(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextButton(
                 onPressed: handleSubmit,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
                 child: Text(
                   editingId == null ? "Add Memorial" : "Update Memorial",
                   style: textTheme.labelLarge?.copyWith(color: Colors.white),
@@ -235,14 +276,17 @@ class _MemorialsScreenState extends State<MemorialsScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.blueGrey[50],
-        border: Border.all(color: Colors.black12),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFB2EBF2), Color(0xFFE1BEE7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
         ],
       ),

@@ -16,7 +16,8 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends State<SignupPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -25,8 +26,20 @@ class _SignupPageState extends State<SignupPage> {
   bool _obscurePassword = true;
   bool _agreedToTerms = false;
 
+  late AnimationController _gradientController;
+
+  @override
+  void initState() {
+    super.initState();
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+  }
+
   @override
   void dispose() {
+    _gradientController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -56,6 +69,9 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(12);
+    final textTheme = GoogleFonts.poppinsTextTheme(
+      Theme.of(context).textTheme.apply(bodyColor: Colors.black),
+    );
 
     return BlocProvider(
       create: (_) => SignupBloc(signupUseCase: serviceLocator()),
@@ -76,6 +92,7 @@ class _SignupPageState extends State<SignupPage> {
           }
         },
         child: Scaffold(
+          backgroundColor: const Color(0xFFF5F7FA),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
@@ -83,18 +100,27 @@ class _SignupPageState extends State<SignupPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    const SizedBox(height: 40),
-                    Text(
-                      'Join PetAlert!',
-                      style: GoogleFonts.poppins(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                        letterSpacing: 0.3,
+                    const SizedBox(height: 50),
+                    AnimatedBuilder(
+                      animation: _gradientController,
+                      builder: (context, _) => ShaderMask(
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: const [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                          begin: Alignment(-1 + 2 * _gradientController.value, -1),
+                          end: Alignment(1 - 2 * _gradientController.value, 1),
+                        ).createShader(bounds),
+                        child: Text(
+                          "Join PetAlert!",
+                          style: textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 40),
+
+                    /// Name
                     TextFormField(
                       controller: _nameController,
                       validator: (val) =>
@@ -106,6 +132,8 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
+
+                    /// Email
                     TextFormField(
                       controller: _emailController,
                       validator: (val) {
@@ -120,6 +148,8 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
+
+                    /// Password
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
@@ -130,7 +160,9 @@ class _SignupPageState extends State<SignupPage> {
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                           ),
                           onPressed: () {
                             setState(() => _obscurePassword = !_obscurePassword);
@@ -139,7 +171,10 @@ class _SignupPageState extends State<SignupPage> {
                         border: OutlineInputBorder(borderRadius: borderRadius),
                       ),
                     ),
+
                     const SizedBox(height: 20),
+
+                    /// Terms Agreement
                     Row(
                       children: [
                         Checkbox(
@@ -173,19 +208,24 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 40),
+
+                    const SizedBox(height: 30),
+
+                    /// Signup Button
                     BlocBuilder<SignupBloc, SignupState>(
                       builder: (context, state) {
-                        return SizedBox(
+                        return Container(
                           width: double.infinity,
-                          child: ElevatedButton(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                            ),
+                            borderRadius: borderRadius,
+                          ),
+                          child: TextButton(
                             onPressed: state.isLoading ? null : () => _onSubmit(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
+                            style: TextButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: borderRadius,
-                              ),
                             ),
                             child: state.isLoading
                                 ? const CircularProgressIndicator(color: Colors.white)

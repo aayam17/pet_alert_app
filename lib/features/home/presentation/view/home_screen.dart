@@ -16,25 +16,57 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   bool showNotifications = false;
   final List<String> notifications = [
     "🐶 New Lost Pet in Lazimpat",
     "🕊️ Memorial Tribute added for Bella",
   ];
 
-  static const double shakeThreshold = 15.0;
+  static const double shakeThreshold = 25.0;
   DateTime lastShakeTime = DateTime.now();
 
   Light? _lightSensor;
   Stream<int>? _lightStream;
   int _lastLuxLevel = -1;
 
+  late AnimationController _textController;
+  late Animation<Offset> _slideAnimation;
+
+  late AnimationController _gradientController;
+
   @override
   void initState() {
     super.initState();
     _startShakeListener();
     _startLightSensor();
+
+    _textController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _textController,
+      curve: Curves.easeOut,
+    ));
+
+    _textController.forward();
+
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _gradientController.dispose();
+    super.dispose();
   }
 
   void _startShakeListener() {
@@ -95,40 +127,42 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: const Color(0xFFF1F4F8),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        titleSpacing: 0,
         toolbarHeight: 0,
       ),
       body: SafeArea(
         child: Stack(
           children: [
             SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 12),
-                        child: Text(
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                        ).createShader(bounds),
+                        child: const Text(
                           "PetAlert",
                           style: TextStyle(
-                            color: Color(0xFF4B3F72),
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                            letterSpacing: 2,
+                            color: Colors.white,
+                            letterSpacing: 1.5,
                           ),
                         ),
                       ),
                       Stack(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.notifications_none,
+                            icon: const Icon(Icons.notifications_outlined,
                                 color: Color(0xFF4B3F72), size: 28),
                             onPressed: () =>
                                 setState(() => showNotifications = !showNotifications),
@@ -138,17 +172,15 @@ class _HomeScreenState extends State<HomeScreen>
                               right: 6,
                               top: 8,
                               child: Container(
-                                padding: const EdgeInsets.all(5),
+                                padding: const EdgeInsets.all(4),
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFFE74C3C),
+                                  color: Colors.redAccent,
                                   shape: BoxShape.circle,
                                 ),
                                 child: Text(
                                   '${notifications.length}',
                                   style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                  ),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -156,44 +188,94 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ],
                   ),
-                  const Text(
-                    "A four-legged word: LOVE",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF4B3F72),
+
+                  const SizedBox(height: 10),
+
+                  // 🟣 Animated Title with moving gradient
+                  SlideTransition(
+                    position: _slideAnimation,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnimatedBuilder(
+                          animation: _gradientController,
+                          builder: (context, child) {
+                            return ShaderMask(
+                              shaderCallback: (bounds) {
+                                return LinearGradient(
+                                  colors: const [Colors.purple, Colors.cyan, Colors.teal],
+                                  begin: Alignment(-1 + 2 * _gradientController.value, -1),
+                                  end: Alignment(1 - 2 * _gradientController.value, 1),
+                                ).createShader(bounds);
+                              },
+                              child: const Text(
+                                "A four-legged word: LOVE",
+                                style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 4),
+                        AnimatedBuilder(
+                          animation: _gradientController,
+                          builder: (context, child) {
+                            return ShaderMask(
+                              shaderCallback: (bounds) {
+                                return LinearGradient(
+                                  colors: const [
+                                    Colors.pink,
+                                    Colors.indigoAccent,
+                                    Colors.cyan
+                                  ],
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight,
+                                  stops: [
+                                    _gradientController.value - 0.2,
+                                    _gradientController.value,
+                                    _gradientController.value + 0.2,
+                                  ].map((e) => e.clamp(0.0, 1.0)).toList(),
+                                ).createShader(bounds);
+                              },
+                              child: const Text(
+                                "Providing expert pet care services online.",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "Providing expert pet care services online.",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF555E68),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+
+                  const SizedBox(height: 30),
+
                   GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const CommunityBoardScreen()),
-                      );
-                    },
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const CommunityBoardScreen()),
+                    ),
                     child: Container(
-                      margin: const EdgeInsets.only(top: 12),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 14),
+                          horizontal: 20, vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.blueGrey[200],
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.blueGrey.shade300),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                        ),
+                        borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 12,
+                            offset: const Offset(0, 5),
                           ),
                         ],
                       ),
@@ -201,24 +283,28 @@ class _HomeScreenState extends State<HomeScreen>
                         child: Text(
                           "Go to Community Board",
                           style: TextStyle(
-                            color: Color(0xFF2D2D2D),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+
+                  const SizedBox(height: 30),
+
                   const Text(
                     "Explore Services",
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
                       color: Color(0xFF4B3F72),
                     ),
                   ),
+
                   const SizedBox(height: 16),
+
                   GridView.count(
                     crossAxisCount: 2,
                     shrinkWrap: true,
@@ -227,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen>
                     mainAxisSpacing: 16,
                     childAspectRatio: 1,
                     children: [
-                      _buildAnimatedGridCard(
+                      _buildServiceCard(
                         icon: Icons.local_hospital_rounded,
                         title: "Vet Appointments",
                         subtitle: "Book & track vet visits",
@@ -237,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen>
                               builder: (_) => const VetAppointmentsScreen()),
                         ),
                       ),
-                      _buildAnimatedGridCard(
+                      _buildServiceCard(
                         icon: Icons.vaccines_rounded,
                         title: "Vaccination",
                         subtitle: "Manage vaccinations",
@@ -247,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen>
                               builder: (_) => const VaccinationRecordsScreen()),
                         ),
                       ),
-                      _buildAnimatedGridCard(
+                      _buildServiceCard(
                         icon: Icons.search,
                         title: "Lost & Found",
                         subtitle: "Report or search pets",
@@ -257,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen>
                               builder: (_) => const LostAndFoundScreen()),
                         ),
                       ),
-                      _buildAnimatedGridCard(
+                      _buildServiceCard(
                         icon: Icons.favorite_border,
                         title: "Memorials",
                         subtitle: "Tributes & memories",
@@ -272,6 +358,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               ),
             ),
+
             if (showNotifications)
               Positioned(
                 top: kToolbarHeight + 8,
@@ -289,26 +376,24 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: notifications
-                          .map(
-                            (note) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.pets,
-                                      size: 18, color: Color(0xFF4B3F72)),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      note,
-                                      style: const TextStyle(
-                                          color: Color(0xFF1F1F1F)),
+                          .map((note) => Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.pets,
+                                        size: 18, color: Color(0xFF4B3F72)),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        note,
+                                        style: const TextStyle(
+                                            color: Color(0xFF1F1F1F)),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
+                                  ],
+                                ),
+                              ))
                           .toList(),
                     ),
                   ),
@@ -320,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildAnimatedGridCard({
+  Widget _buildServiceCard({
     required IconData icon,
     required String title,
     required String subtitle,
@@ -328,21 +413,19 @@ class _HomeScreenState extends State<HomeScreen>
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeInOut,
+      child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.blueGrey[50],
+          color: Colors.white.withOpacity(0.9),
           borderRadius: BorderRadius.circular(18),
           boxShadow: const [
             BoxShadow(
               color: Colors.black12,
-              blurRadius: 6,
-              offset: Offset(0, 4),
+              blurRadius: 10,
+              offset: Offset(0, 6),
             ),
           ],
         ),
-        padding: const EdgeInsets.all(18),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -351,13 +434,13 @@ class _HomeScreenState extends State<HomeScreen>
             Text(
               title,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2D2D2D),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 6),
             Text(
               subtitle,
               style: const TextStyle(

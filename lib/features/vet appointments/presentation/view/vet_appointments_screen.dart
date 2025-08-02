@@ -13,16 +13,30 @@ class VetAppointmentsScreen extends StatefulWidget {
   State<VetAppointmentsScreen> createState() => _VetAppointmentsScreenState();
 }
 
-class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
+class _VetAppointmentsScreenState extends State<VetAppointmentsScreen>
+    with SingleTickerProviderStateMixin {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   TextEditingController notesController = TextEditingController();
   String? editingId;
 
+  late AnimationController _gradientController;
+
   @override
   void initState() {
     super.initState();
     context.read<VetAppointmentCubit>().loadAppointments();
+
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _gradientController.dispose();
+    super.dispose();
   }
 
   void resetForm() {
@@ -89,13 +103,28 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: Text('Vet Appointments',
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+        title: AnimatedBuilder(
+          animation: _gradientController,
+          builder: (context, _) => ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: const [Colors.deepPurple, Colors.cyan],
+              begin: Alignment(-1 + 2 * _gradientController.value, -1),
+              end: Alignment(1 - 2 * _gradientController.value, 1),
+            ).createShader(bounds),
+            child: Text(
+              'Vet Appointments',
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
@@ -133,14 +162,17 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.blueGrey[100], // 🩺 updated background
+        gradient: const LinearGradient(
+          colors: [Color(0xFFD1C4E9), Color(0xFFB2EBF2)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 4),
           )
         ],
       ),
@@ -156,19 +188,26 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
               labelText: 'Notes',
               labelStyle: textTheme.bodyMedium,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              fillColor: Colors.white,
+              filled: true,
             ),
             maxLines: 2,
           ),
           const SizedBox(height: 16),
-          SizedBox(
+          Container(
             width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black, // 🔘 updated to black
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
               ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: TextButton(
               onPressed: handleSubmit,
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
               child: Text(
                 editingId != null ? 'Update Appointment' : 'Add Appointment',
                 style: textTheme.labelLarge?.copyWith(color: Colors.white),
@@ -185,14 +224,14 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
       margin: const EdgeInsets.symmetric(vertical: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blueGrey[50], // 📋 updated background
+        color: Colors.white,
         border: Border.all(color: Colors.black12),
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
+            color: Colors.black12,
             blurRadius: 8,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -200,8 +239,8 @@ class _VetAppointmentsScreenState extends State<VetAppointmentsScreen> {
         contentPadding: EdgeInsets.zero,
         leading: const CircleAvatar(
           radius: 24,
-          backgroundColor: Colors.black,
-          child: Icon(Icons.person, color: Colors.white, size: 24),
+          backgroundColor: Colors.deepPurple,
+          child: Icon(Icons.person_outline, color: Colors.white),
         ),
         title: Text('${appt.date} • ${appt.time}', style: textTheme.titleMedium),
         subtitle: Padding(

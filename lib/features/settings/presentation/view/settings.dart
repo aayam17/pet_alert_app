@@ -1,53 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:pet_alert_app/features/auth/presentation/view/login_page.dart';
 import 'widgets/about_us_screen.dart';
 import 'widgets/contact_us_screen.dart';
 import 'widgets/faq_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStateMixin {
-  late bool darkModeEnabled;
-  late final AnimationController _iconController;
-
-  @override
-  void initState() {
-    super.initState();
-    // Detect system brightness initially
-    darkModeEnabled = SchedulerBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
-
-    _iconController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-      lowerBound: 0.0,
-      upperBound: 1.0,
-    );
-
-    if (darkModeEnabled) {
-      _iconController.value = 1.0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _iconController.dispose();
-    super.dispose();
-  }
-
-  void navigateTo(Widget screen) {
+  void navigateTo(BuildContext context, Widget screen) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => screen),
     );
   }
 
-  Future<void> handleLogout() async {
+  Future<void> handleLogout(BuildContext context) async {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -55,93 +23,102 @@ class _SettingsScreenState extends State<SettingsScreen> with TickerProviderStat
     );
   }
 
-  ThemeMode _getThemeMode() => darkModeEnabled ? ThemeMode.dark : ThemeMode.light;
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      themeMode: _getThemeMode(),
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        backgroundColor: const Color(0xFFF9F9F9),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: const Text("Settings", style: TextStyle(color: Color(0xFF4B3F72))),
-          iconTheme: const IconThemeData(color: Color(0xFF4B3F72)),
-          elevation: 1,
+    final textTheme = GoogleFonts.poppinsTextTheme(
+      Theme.of(context).textTheme.apply(
+        bodyColor: Colors.black,
+        displayColor: Colors.black,
+      ),
+    );
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Colors.deepPurple, Colors.cyan],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(bounds),
+          child: Text(
+            "Settings",
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(24),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
           children: [
-            /// Dark Mode toggle only
-            SwitchListTile(
-              title: const Text("Enable Dark Mode"),
-              value: darkModeEnabled,
-              activeColor: Colors.black,
-              secondary: AnimatedBuilder(
-                animation: _iconController,
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _iconController.value * 3.14,
-                    child: Icon(
-                      darkModeEnabled ? Icons.dark_mode : Icons.light_mode,
-                      color: Colors.black,
-                    ),
-                  );
-                },
-              ),
-              onChanged: (val) {
-                setState(() {
-                  darkModeEnabled = val;
-                  if (val) {
-                    _iconController.forward();
-                  } else {
-                    _iconController.reverse();
-                  }
-                });
-              },
-            ),
-
-            const SizedBox(height: 20),
-
             /// About Us
-            ListTile(
-              leading: const Icon(Icons.info_outline, color: Colors.black),
-              title: const Text("About Us"),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => navigateTo(const AboutUsScreen()),
-            ),
-
-            /// Contact Us
-            ListTile(
-              leading: const Icon(Icons.contact_mail, color: Colors.black),
-              title: const Text("Contact Us"),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => navigateTo(const ContactUsScreen()),
-            ),
-
-            /// FAQ
-            ListTile(
-              leading: const Icon(Icons.help_outline, color: Colors.black),
-              title: const Text("FAQ"),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => navigateTo(const FAQScreen()),
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD1C4E9), Color(0xFFB2EBF2)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.info_outline, color: Colors.black),
+                    title: const Text("About Us"),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () => navigateTo(context, const AboutUsScreen()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.contact_mail, color: Colors.black),
+                    title: const Text("Contact Us"),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () => navigateTo(context, const ContactUsScreen()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.help_outline, color: Colors.black),
+                    title: const Text("FAQ"),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () => navigateTo(context, const FAQScreen()),
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 40),
 
             /// Logout
-            Center(
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: TextButton.icon(
-                onPressed: handleLogout,
-                icon: const Icon(Icons.logout, color: Colors.red),
-                label: const Text(
+                onPressed: () => handleLogout(context),
+                icon: const Icon(Icons.logout, color: Colors.white),
+                label: Text(
                   "Logout",
-                  style: TextStyle(color: Colors.red),
+                  style: textTheme.labelLarge?.copyWith(color: Colors.white),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

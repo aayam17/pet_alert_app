@@ -15,15 +15,36 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  late AnimationController _gradientController;
+
+  @override
+  void initState() {
+    super.initState();
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _gradientController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final borderRadius = BorderRadius.circular(12);
+    final textTheme = GoogleFonts.poppinsTextTheme(
+      Theme.of(context).textTheme.apply(bodyColor: Colors.black),
+    );
 
     return BlocProvider(
       create: (_) => LoginBloc(loginUseCase: serviceLocator()),
@@ -41,26 +62,40 @@ class _LoginPageState extends State<LoginPage> {
           }
         },
         child: Scaffold(
+          backgroundColor: const Color(0xFFF5F7FA),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 40),
-                    Text(
-                      'Welcome',
-                      style: GoogleFonts.poppins(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                        letterSpacing: 0.5,
-                      ),
-                      textAlign: TextAlign.center,
+                    const SizedBox(height: 50),
+
+                    /// Animated Gradient App Name
+                    AnimatedBuilder(
+                      animation: _gradientController,
+                      builder: (context, _) {
+                        return ShaderMask(
+                          shaderCallback: (bounds) => LinearGradient(
+                            colors: const [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                            begin: Alignment(-1 + 2 * _gradientController.value, -1),
+                            end: Alignment(1 - 2 * _gradientController.value, 1),
+                          ).createShader(bounds),
+                          child: Text(
+                            "Welcome to PetAlert",
+                            style: textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      },
                     ),
+
                     const SizedBox(height: 40),
+
+                    /// Email Field
                     TextFormField(
                       controller: _emailController,
                       validator: (val) =>
@@ -72,61 +107,66 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
+
+                    /// Password Field
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      validator: (val) => val == null || val.length < 6
-                          ? 'Enter min 6 characters'
-                          : null,
+                      validator: (val) =>
+                          val == null || val.length < 6 ? 'Enter min 6 characters' : null,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility),
-                          onPressed: () =>
-                              setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () => setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          }),
                         ),
                         border: OutlineInputBorder(borderRadius: borderRadius),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
+
+                    /// Login Button
                     BlocBuilder<LoginBloc, LoginState>(
                       builder: (context, state) {
-                        return SizedBox(
+                        return Container(
                           width: double.infinity,
-                          child: ElevatedButton(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
+                            ),
+                            borderRadius: borderRadius,
+                          ),
+                          child: TextButton(
                             onPressed: state.isLoading
                                 ? null
                                 : () {
                                     if (_formKey.currentState!.validate()) {
                                       context.read<LoginBloc>().add(
                                             LoginSubmitted(
-                                              email:
-                                                  _emailController.text.trim(),
-                                              password: _passwordController.text
-                                                  .trim(),
+                                              email: _emailController.text.trim(),
+                                              password: _passwordController.text.trim(),
                                               context: context,
                                             ),
                                           );
                                     }
                                   },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black87,
+                            style: TextButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: borderRadius,
-                              ),
                             ),
                             child: state.isLoading
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white)
+                                ? const CircularProgressIndicator(color: Colors.white)
                                 : const Text(
                                     'Log In',
                                     style: TextStyle(
-                                      color: Colors.white,
                                       fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
                                   ),
                           ),
@@ -134,6 +174,8 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(height: 30),
+
+                    /// Signup Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -142,8 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (_) => const SignupPage()),
+                              MaterialPageRoute(builder: (_) => const SignupPage()),
                             );
                           },
                           child: const Text(

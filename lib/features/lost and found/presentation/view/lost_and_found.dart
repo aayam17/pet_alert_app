@@ -14,7 +14,8 @@ class LostAndFoundScreen extends StatefulWidget {
   State<LostAndFoundScreen> createState() => _LostAndFoundScreenState();
 }
 
-class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
+class _LostAndFoundScreenState extends State<LostAndFoundScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   String type = "Lost";
   TextEditingController descriptionController = TextEditingController();
@@ -23,10 +24,22 @@ class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
   TimeOfDay? selectedTime;
   String? editingId;
 
+  late AnimationController _gradientController;
+
   @override
   void initState() {
     super.initState();
     context.read<LostAndFoundCubit>().loadEntries();
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _gradientController.dispose();
+    super.dispose();
   }
 
   void resetForm() {
@@ -92,13 +105,29 @@ class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: Text("Lost and Found Board", style: textTheme.titleLarge),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
+        title: AnimatedBuilder(
+          animation: _gradientController,
+          builder: (context, _) => ShaderMask(
+            shaderCallback: (bounds) => LinearGradient(
+              colors: const [Colors.deepPurple, Colors.cyan],
+              begin: Alignment(-1 + 2 * _gradientController.value, -1),
+              end: Alignment(1 - 2 * _gradientController.value, 1),
+            ).createShader(bounds),
+            child: Text(
+              "Lost and Found Board",
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
       ),
       body: BlocBuilder<LostAndFoundCubit, LostAndFoundState>(
         builder: (context, state) {
@@ -106,18 +135,21 @@ class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                /// FORM
+                /// FORM CARD
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.blueGrey[100],
-                    border: Border.all(color: Colors.black12),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFD1C4E9), Color(0xFFB2EBF2)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
-                        color: Colors.black12.withOpacity(0.05),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
                       )
                     ],
                   ),
@@ -192,17 +224,20 @@ class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        SizedBox(
+                        Container(
                           width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
                             ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextButton(
                             onPressed: submitForm,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
                             child: Text(
                               editingId == null ? "Add Entry" : "Update Entry",
                               style: textTheme.labelLarge?.copyWith(color: Colors.white),
@@ -216,7 +251,6 @@ class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
 
                 const SizedBox(height: 24),
 
-                /// STATE-BASED UI
                 if (state is LostAndFoundLoading)
                   const CircularProgressIndicator()
                 else if (state is LostAndFoundLoaded)
@@ -224,20 +258,20 @@ class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
                     children: state.entries.map((entry) {
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.blueGrey[50],
-                          border: Border.all(color: Colors.black12),
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
-                              color: Colors.black12.withOpacity(0.05),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
                             )
                           ],
                         ),
                         child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
+                          contentPadding: EdgeInsets.zero,
                           title: Row(
                             children: [
                               Container(
@@ -259,7 +293,7 @@ class _LostAndFoundScreenState extends State<LostAndFoundScreen> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(entry.description,
-                                    style: textTheme.titleMedium),
+                                    style: textTheme.titleMedium?.copyWith(color: Colors.black)),
                               ),
                             ],
                           ),
