@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:light/light.dart';
+import 'package:proximity_sensor/proximity_sensor.dart';
 import 'package:pet_alert_app/features/community%20board/presentation/view/community_board_screen.dart';
 import '../../../vet appointments/presentation/view/vet_appointments_screen.dart';
 import '../../../vaccination records/presentation/view/vaccination_records_screen.dart';
@@ -26,20 +26,17 @@ class _HomeScreenState extends State<HomeScreen>
   static const double shakeThreshold = 25.0;
   DateTime lastShakeTime = DateTime.now();
 
-  Light? _lightSensor;
-  Stream<int>? _lightStream;
-  int _lastLuxLevel = -1;
+  bool _isNear = false;
 
   late AnimationController _textController;
   late Animation<Offset> _slideAnimation;
-
   late AnimationController _gradientController;
 
   @override
   void initState() {
     super.initState();
     _startShakeListener();
-    _startLightSensor();
+    _startProximitySensor();
 
     _textController = AnimationController(
       vsync: this,
@@ -80,7 +77,21 @@ class _HomeScreenState extends State<HomeScreen>
 
       if (acceleration > shakeThreshold && timeDiff.inMilliseconds > 1000) {
         lastShakeTime = now;
+        _showSnackBar("📳 Shake detected! Opening Community Board...");
         _navigateToCommunityBoard();
+      }
+    });
+  }
+
+  void _startProximitySensor() {
+    ProximitySensor.events.listen((event) {
+      if (event is bool && event != _isNear) {
+        _isNear = event as bool;
+        if (_isNear) {
+          _showSnackBar("📡 Object detected near the device!");
+        } else {
+          _showSnackBar("📡 Object moved away from the sensor!");
+        }
       }
     });
   }
@@ -90,27 +101,6 @@ class _HomeScreenState extends State<HomeScreen>
       context,
       MaterialPageRoute(builder: (_) => const CommunityBoardScreen()),
     );
-  }
-
-  void _startLightSensor() {
-    _lightSensor = Light();
-    _lightStream = _lightSensor!.lightSensorStream;
-
-    _lightStream!.listen((lux) {
-      if (_lastLuxLevel == -1 ||
-          (lux < 10 && _lastLuxLevel >= 10) ||
-          (lux > 100 && _lastLuxLevel <= 100)) {
-        _lastLuxLevel = lux;
-
-        if (lux < 10) {
-          _showSnackBar("🌙 Low light detected!");
-        } else if (lux > 100) {
-          _showSnackBar("☀️ Bright environment detected!");
-        }
-      }
-    }, onError: (err) {
-      debugPrint("Light sensor error: $err");
-    });
   }
 
   void _showSnackBar(String message) {
@@ -191,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                   const SizedBox(height: 10),
 
-                  // 🟣 Animated Title with moving gradient
+                  // Animated Title
                   SlideTransition(
                     position: _slideAnimation,
                     child: Column(
@@ -258,14 +248,9 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 30),
 
                   GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const CommunityBoardScreen()),
-                    ),
+                    onTap: _navigateToCommunityBoard,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
@@ -377,18 +362,15 @@ class _HomeScreenState extends State<HomeScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: notifications
                           .map((note) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.pets,
-                                        size: 18, color: Color(0xFF4B3F72)),
+                                    const Icon(Icons.pets, size: 18, color: Color(0xFF4B3F72)),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         note,
-                                        style: const TextStyle(
-                                            color: Color(0xFF1F1F1F)),
+                                        style: const TextStyle(color: Color(0xFF1F1F1F)),
                                       ),
                                     ),
                                   ],

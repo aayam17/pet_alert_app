@@ -63,7 +63,7 @@ dependencies:
   bloc_test: ^10.0.0
   intl: ^0.18.1
   sensors_plus: ^3.0.3
-  light: ^4.1.0
+  proximity_sensor: ^1.0.3
   http: ^1.4.0
 
 dev_dependencies:
