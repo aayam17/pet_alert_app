@@ -227,12 +227,23 @@ class _MemorialsScreenState extends State<MemorialsScreen>
             const SizedBox(height: 6),
             Row(
               children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.image, color: Colors.white),
-                  label: const Text("Pick Photo", style: TextStyle(color: Colors.white)),
-                  onPressed: pickImage,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                Container(
+                decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                colors: [Color(0xFF4B3F72), Color(0xFF00B4DB)],
                 ),
+                 borderRadius: BorderRadius.circular(10),
+                ),
+                child: TextButton.icon(
+                icon: const Icon(Icons.image, color: Colors.white),
+                label: const Text("Pick Photo", style: TextStyle(color: Colors.white)),
+                onPressed: pickImage,
+                style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                   ),
+                  ),
                 const SizedBox(width: 12),
                 Flexible(
                   child: Text(

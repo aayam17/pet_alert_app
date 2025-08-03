@@ -13,10 +13,6 @@ class _FAQScreenState extends State<FAQScreen> {
 
   final List<Map<String, String>> faqs = [
     {
-      "question": "How do I create a pet profile?",
-      "answer": "Navigate to 'Pet Profiles' and click 'Add New Pet'."
-    },
-    {
       "question": "Can I track vaccination records?",
       "answer": "Yes! Go to each pet profile and update their records."
     },
